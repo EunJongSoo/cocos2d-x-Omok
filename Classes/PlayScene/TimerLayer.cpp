@@ -1,13 +1,25 @@
+#define COUNT_DOWN 4.0f
+#define FALL_BACK_TIME 6.0f
+#define SYSTEM_FONT_SIZE 50.0f
+
 #include "PlayScene\TimerLayer.h"
 
 using namespace cocos2d;
 
-const float CountDown = 3.0f;
-const float FallBackTime = 5.0f;
-const float SystemFontSize = 50.0f;
+class CPlayScene;
 
-CTimerLayer::CTimerLayer():m_CountDown(CountDown), m_Timer(FallBackTime), m_GameStart(false){}
+CTimerLayer::CTimerLayer():countDown(COUNT_DOWN), timer(FALL_BACK_TIME), 
+							gameStartCheck(false), timeOverCheck(false) {
+	runActionGameUpdate = NULL;
+
+}
 CTimerLayer::~CTimerLayer() {}
+
+void CTimerLayer::setRunActionrFuncs(std::function<void(void)> gameupdate,
+										std::function<void(void)> timeover){
+	runActionGameUpdate = gameupdate;
+	runActionTimeOver = timeover;
+}
 
 bool CTimerLayer::init() {
 	if (!Layer::init())
@@ -15,77 +27,77 @@ bool CTimerLayer::init() {
 
 	Size winSize = CCDirector::getInstance()->getWinSize();
 	
-	m_CountDownLabel = cocos2d::Label::create();
-	m_CountDownLabel->setPosition(Vec2(winSize / 2));
-	m_CountDownLabel->setSystemFontSize(SystemFontSize);
-	m_CountDownLabel->setVisible(false);
-	this->addChild(m_CountDownLabel);
+	countDownLabel = cocos2d::Label::create();
+	countDownLabel->setPosition(Vec2(winSize / 2));
+	countDownLabel->setSystemFontSize(SYSTEM_FONT_SIZE);
+	countDownLabel->setVisible(false);
+	this->addChild(countDownLabel);
 
-	m_TimerLabel = cocos2d::Label::create();
-
-	// ********* 타임레이블 위치 잡을 방법 구상필요
-	// ********* 타임레이블 위치 잡을 방법 구상필요
-	// ********* 타임레이블 위치 잡을 방법 구상필요
-	// ********* 타임레이블 위치 잡을 방법 구상필요
-	m_TimerLabel->setPosition(Vec2(winSize.width / 10 ,winSize.height / 1.1));
-	m_TimerLabel->setSystemFontSize(SystemFontSize);
-	m_TimerLabel->setVisible(false);
-	this->addChild(m_TimerLabel);
+	timerLabel = cocos2d::Label::create();
+	timerLabel->setPosition(Vec2(winSize.width / 10 ,winSize.height / 1.1));
+	timerLabel->setSystemFontSize(SYSTEM_FONT_SIZE);
+	timerLabel->setVisible(false);
+	this->addChild(timerLabel);
 
 	return true;
 }
 
-bool CTimerLayer::getGameStart() const {
-	return m_GameStart;
+void CTimerLayer::initTimerLayer() {
+	timer = FALL_BACK_TIME;
+	countDown = COUNT_DOWN;
+	gameStartCheck = false;
+	countDownLabel->setVisible(false);
+	timerLabel->setVisible(false);
+}
+
+void CTimerLayer::runActionCountDown() {
+	countDownLabel->setVisible(true);
+	this->schedule(schedule_selector(CTimerLayer::updateCountDown), 1.0f);
+}
+
+void CTimerLayer::runActionTimer() {
+	timer = FALL_BACK_TIME;
+	timerLabel->setVisible(true);
+	this->schedule(schedule_selector(CTimerLayer::updateTimer), 1.0f);
+}
+
+void CTimerLayer::updateCountDown(float dt) {
+	countDown -= dt;
+	char str[4];
+	sprintf_s(str, sizeof(str), "%d", (int)countDown);
+	countDownLabel->setString(str);
+	if (countDown < 0) {
+		countDownLabel->setVisible(false);
+		runActionGameUpdate();
+	}
+}
+
+void CTimerLayer::updateTimer(float dt) {
+	timer -= dt;
+	char str[4];
+	sprintf_s(str, sizeof(str), "%d", (int)timer);
+	timerLabel->setString(str);
+	if (timer < 0) {
+		runActionTimeOver();
+	}
+}
+
+void CTimerLayer::unscheduleTimer() {
+	this->unschedule(schedule_selector(CTimerLayer::updateTimer));
+}
+
+bool CTimerLayer::getGameStartCheck() const {
+	return gameStartCheck;
 }
 
 void CTimerLayer::setGameStart(bool b) {
-	m_GameStart = b;
+	gameStartCheck = b;
 }
 
-void CTimerLayer::setCountDownVisible(bool b) {
-	m_CountDownLabel->setVisible(b);
+bool CTimerLayer::getTimeOverCheck() const {
+	return timeOverCheck;
 }
 
-void CTimerLayer::setTimerVisible(bool b) {
-	m_TimerLabel->setVisible(b);
-}
-
-bool CTimerLayer::UpdateCountDown(float time) {
-	if (m_CountDown > 0) {
-		m_CountDown -= time;
-		char str[4];
-		sprintf_s(str, sizeof(str), "%d", (int)roundf(m_CountDown));
-		m_CountDownLabel->setString(str);
-		if (m_CountDown < 0)
-			return m_GameStart = true;
-	}
-	return false;
-}
-
-void CTimerLayer::UpdateTimer(float time) {
-	// 제한시간 
-	if (m_Timer > 0) {
-		m_Timer -= time;
-		char str[4];
-		sprintf_s(str, sizeof(str), "%d", (int)roundf(m_Timer));
-		m_TimerLabel->setString(str);
-	}
-	// 제한시간 초과시
-	else if(m_Timer <= 0){
-		throw (int)GameState::TimeOver;
-	}
-}
-
-void CTimerLayer::resetTimerLayer() {
-	resetTimer();
-	m_CountDown = CountDown;
-	m_GameStart = false;
-	m_CountDownLabel->setVisible(false);
-	m_TimerLabel->setVisible(false);
-}
-
-void CTimerLayer::resetTimer() {
-	m_Timer = FallBackTime;
-	//UpdateTimer(0.0);
+void CTimerLayer::setTimeOver(bool b) {
+	timeOverCheck = b;
 }

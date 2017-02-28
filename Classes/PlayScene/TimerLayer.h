@@ -5,28 +5,36 @@
 #include "enumHeader.h"
 
 class CTimerLayer : public cocos2d::Layer {
-private:
-	float m_CountDown;
-	float m_Timer;
-	bool m_GameStart;
-
-	cocos2d::Label* m_CountDownLabel;
-	cocos2d::Label* m_TimerLabel;
-
 public:
 	CTimerLayer();
 	virtual ~CTimerLayer();
 	virtual bool init();
 	CREATE_FUNC(CTimerLayer);
 
-	bool getGameStart() const;
-	void setGameStart(bool b = true);
-	void setCountDownVisible(bool b = true);
-	void setTimerVisible(bool b = true);
-	
-	bool UpdateCountDown(float time);
-	void UpdateTimer(float time);
-	void resetTimer();
-	void resetTimerLayer();
+	void initTimerLayer();
+	void runActionCountDown();
+	void runActionTimer();
+	void unscheduleTimer();
+	bool getGameStartCheck() const;
+	void setGameStart(bool b);
+	bool getTimeOverCheck() const;
+	void setTimeOver(bool b);
+
+	void setRunActionrFuncs(std::function<void(void)> gameupdate, 
+							std::function<void(void)> timeover);
+
+private:
+	void updateCountDown(float dt);
+	void updateTimer(float dt);
+	std::function<void(void)>runActionGameUpdate;
+	std::function<void(void)>runActionTimeOver;
+
+private:
+	float countDown;
+	float timer;
+	bool gameStartCheck;
+	bool timeOverCheck;
+	cocos2d::Label* countDownLabel;
+	cocos2d::Label* timerLabel;
 };
 #endif

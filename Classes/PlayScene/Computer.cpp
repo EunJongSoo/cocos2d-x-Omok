@@ -1,3 +1,7 @@
+#define DEBUG_MODE 0;
+#define MAXVAL(i, j) i = j + 2 < 18 ? j + 2 : 18
+#define MINVAL(i, j) i = j - 2 > 0 ? j - 2 : 0
+
 #include "Computer.h"
 #include "StoneLayer.h"
 #include <time.h>
@@ -5,96 +9,21 @@
 using namespace cocos2d;
 using namespace std;
 
-#define MAXVAL(i, j) i = j + 2 < 18 ? j + 2 : 18
-#define MINVAL(i, j) i = j - 2 > 0 ? j - 2 : 0
-
-#define DEBUG_MODE 1;
-
-CComputer::CComputer() : previous_color{ 2, 2, 2,2 }, count1(0) {
+CComputer::CComputer() : count1(0) {
 	srand((unsigned)time(NULL));
 }
 
 CComputer::~CComputer() {}
 
-void CComputer::CalculationScore(Node* node) {
-	CStoneLayer* stonelayer = dynamic_cast<CStoneLayer*>(node);
-	
-	int maxX = MAXVAL(maxX, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMaxX]);
-	int minX = MINVAL(minX, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMinX]);
-	int maxY = MAXVAL(maxY, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMaxY]);
-	int minY = MINVAL(minY, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMinY]);
-
-	for (int y = minY; y <= maxY; ++y) {
-		for (int x = minX; x <= maxX; ++x) {
-			CStoneSprite* sprite = stonelayer->getSprite(x, y);
-			int maxscore[2] = { 0, };
-			if (sprite->getActive()) {
-				for (int dir = 0; dir < CStoneLayer::Direction::DirCount; ++dir) {
-
-					int score[2] = { 0, };
-					for (int depth = 1; depth <= 4; ++depth) {
-						sprite = stonelayer->SearcharoundSprite(x, y, dir, depth);
-						if (sprite == nullptr) break;
-						int color = sprite->getStoneType();
-						previous_color[depth - 1] = color;
-
-						// 돌이 없다.
-						if (color == Stone::Emptied) {
-							if (depth != 1) {
-								// 2번 연속 비었는가?
-								if (color == previous_color[depth - 2]) break;
-								score[previous_color[depth - 2]] += (depth - 2);
-							}
-						}
-						// 돌이 있다. 1~4
-						else if (depth == 1) {
-							score[color] += 1;
-						}
-						else {
-							if (previous_color[depth - 1] == previous_color[depth - 2]) {
-								score[color] += (depth*1.8f);
-							}
-							else if (depth > 2 && previous_color[depth - 1] == PreviousColor[depth - 3]) {
-								score[color] += 1;
-							}
-							else if (PreviousColor[depth - 1] != Stone::Emptied) {
-								score[color] -= depth;
-								break;
-							}
-						}
-					}
-					for (int i = 0; i < 4; ++i) {
-						previous_color[i] = Stone::Emptied;
-					}
-					maxscore[0] += score[0];
-					maxscore[1] += score[1];
-				}
-				int iPointMaxScore = (maxscore[Black] > maxscore[White] ? maxscore[Black] : maxscore[White]);
-				vector<Label*> labelvector = stonelayer->labelvec;
-				Label* label = labelvector.at(19 * y + x);
-				char str[4];
-				sprintf_s(str, sizeof(str), "%d", iPointMaxScore);
-				label->setString(str);
-				label->setColor(Color3B(250, 50, 50));
-				label->setVisible(true);
-				sprite = stonelayer->getSprite(x, y);
-				sprite->setScore(iPointMaxScore);
-				++count1;
-			}
-		}
-	}
-	CCLOG("ComputerTurn count1 : %d", count1);
-}
-
-Vec2 CComputer::ComputerTurn(Node* node) {
+Vec2 CComputer::computerTurn(Node* node) const {
 	CStoneLayer* stonelayer = dynamic_cast<CStoneLayer*>(node);
 	// 전체 바둑판 19*19에 대해서 점수를 계산하고
 	// 가장 점수가 높은 자리에 착수를 한다.
-	int maxX = MAXVAL(maxX, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMaxX]);
-	int minX = MINVAL(minX, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMinX]);
-	int maxY = MAXVAL(maxY, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMaxY]);
-	int minY = MINVAL(minY, stonelayer->m_iXY[CStoneLayer::Min_MaxXY::eMinY]);
-	
+	int maxX = MAXVAL(maxX, stonelayer->min_max_xy_position[CStoneLayer::Min_MaxXY::max_x]);
+	int minX = MINVAL(minX, stonelayer->min_max_xy_position[CStoneLayer::Min_MaxXY::min_x]);
+	int maxY = MAXVAL(maxY, stonelayer->min_max_xy_position[CStoneLayer::Min_MaxXY::max_y]);
+	int minY = MINVAL(minY, stonelayer->min_max_xy_position[CStoneLayer::Min_MaxXY::min_y]);
+
 	vector<Vec2> vector;
 	int iBestPointScore = 0;
 	for (int y = minY; y <= maxY; ++y) {
@@ -116,6 +45,88 @@ Vec2 CComputer::ComputerTurn(Node* node) {
 	return vector[rand() % vector.size()];
 }
 
+void CComputer::calculationScore(Node* node) {
+	CStoneLayer* stone_layer = dynamic_cast<CStoneLayer*>(node);
+	
+	int max_x = MAXVAL(max_x, stone_layer->min_max_xy_position[CStoneLayer::Min_MaxXY::max_x]);
+	int min_x = MINVAL(min_x, stone_layer->min_max_xy_position[CStoneLayer::Min_MaxXY::min_x]);
+	int max_y = MAXVAL(max_y, stone_layer->min_max_xy_position[CStoneLayer::Min_MaxXY::max_y]);
+	int min_y = MINVAL(min_y, stone_layer->min_max_xy_position[CStoneLayer::Min_MaxXY::min_y]);
+
+	
+	int point_max_score = 0;
+	CStoneSprite* sprite;
+	for (int y = min_y; y <= max_y; ++y) {
+		for (int x = min_x; x <= max_x; ++x) {
+			sprite = stone_layer->getSprite(x, y);
+			if (sprite->getActive()) {
+				point_max_score = calculationPointMaxScore(stone_layer, x, y);
+				sprite->setScore(point_max_score);
+#ifdef DEBUG_MODE == 1
+				vector<Label*> labelvector = stone_layer->labelvec;
+				Label* label = labelvector.at(19 * y + x);
+				char str[4];
+				sprintf_s(str, sizeof(str), "%d", point_max_score);
+				label->setString(str);
+				label->setColor(Color3B(250, 50, 50));
+				label->setVisible(true);
+				++count1;
+#endif
+			}
+		}
+	}
+#ifdef DEBUG_MODE == 1
+	CCLOG("ComputerTurn count1 : %d", count1);
+#endif
+}
+
+int CComputer::calculationPointMaxScore(CStoneLayer* stone_layer, int x, int y) {
+	CStoneSprite* sprite;
+	int max_score[2] = { 0, };
+	int score[2] = { 0, };
+	Stone previous_color[4] = { Stone::emptied, };
+	for (int dir = 0; dir < CStoneLayer::Direction::dir_count; ++dir) {
+		for (int depth = 1; depth <= 4; ++depth) {
+			sprite = stone_layer->searchAroundSprite(x, y, dir, depth);
+			if (sprite == nullptr) break;
+			Stone color = sprite->getStoneType();
+			previous_color[depth - 1] = color;
+
+			// 돌이 없다.
+			if (color == Stone::emptied) {
+				if (depth != 1) {
+					// 2번 연속 비었는가?
+					if (color == previous_color[depth - 2]) break;
+					score[previous_color[depth - 2]] += (depth - 2);
+				}
+			}
+			// 돌이 있다. 1~4
+			else if (depth == 1) {
+				score[color] += 1;
+			}
+			else {
+				if (previous_color[depth - 1] == previous_color[depth - 2]) {
+					score[color] += (depth*1.8f);
+				}
+				else if (depth > 2 && previous_color[depth - 1] == previous_color[depth - 3]) {
+					score[color] += 1;
+				}
+				else if (previous_color[depth - 1] != Stone::emptied) {
+					score[color] -= depth;
+					break;
+				}
+			}
+		}
+		max_score[Stone::black] += score[Stone::black];
+		max_score[Stone::white] += score[Stone::white];
+		for (int i = 0; i < 4; ++i) {
+			previous_color[i] = Stone::emptied;
+		}
+		score[Stone::black] = 0;
+		score[Stone::white] = 0;
+	}
+	return (max_score[Stone::black] > max_score[Stone::white] ? max_score[Stone::black] : max_score[Stone::white]);
+}
 
 // 기존 계산 코드 주석처리
 // 기존 계산 코드 주석처리

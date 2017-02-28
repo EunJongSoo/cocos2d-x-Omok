@@ -8,54 +8,56 @@
 class CComputer;
 
 class CStoneLayer : public cocos2d::Layer {
-private:
-	CComputer* m_Computer;		// 컴퓨터 멤버변수
-
-	float m_fScale;
-	float m_fMarginPixel;		// 바둑판 여백 픽셀
-	float m_fIntervalPixel;		// 바둑판 점 간격 픽셀
-	int m_iCheckCount;			// ********오목 체크, 멤버가 좋은가, 함수간 인자로 주는게 좋은가?
-	int m_iCheckColor;			// 색상 저장 변수 ********** 상동**********
-	bool m_bCheckWin;			// 승리 체크
-	cocos2d::Vec2 m_StrPos;
-	cocos2d::Vec2 m_EndPos;
-
-	// ************* 디버그용
-	// ************* 디버그용
-	// ************* 디버그용
-	int count;
-
-private:
-	void CreateBoard();
-	void CheckBoard(const int s);
-	void CheckWidth();
-	void CheckHeight();
-	void CheckSlash();
-	void CheckBackSlash();
-	void CheckStone(const int x, const int y);
-public:
-	enum Direction {
-		Up, Down, Left, Right,
-		UpperLeft, UpperRight, LowerLeft, LowerRight, DirCount
-	};
-	enum Min_MaxXY {
-		eMaxX, eMinX, eMaxY, eMinY
-	};
-	
-	std::vector<cocos2d::Label*> labelvec;
-	int m_iXY[4] = { 10,8,10,8 };
-
 public:
 	CStoneLayer();
 	virtual ~CStoneLayer();
 	virtual bool init();
 	CREATE_FUNC(CStoneLayer);
 
-	void initStone();
-	void CreateStone(int s);
-	void CreateStone(const cocos2d::Vec2 &pos, int s);
-	void PosCalculation(const cocos2d::Vec2 &pos, int s);
-	CStoneSprite* getSprite(int x, int y) const;
-	CStoneSprite* SearcharoundSprite(int x, int y, int dir, int depth) const;
+	void initStoneLayer();
+	void createStone(const Stone s);
+	void createStone(const cocos2d::Vec2 &pos, const Stone s);
+	void positionCalculation(const cocos2d::Vec2 &pos, const Stone s);
+	CStoneSprite* getSprite(const int x, const int y);
+	CStoneSprite* searchAroundSprite(const float x, const float y, const int dir, const int depth);
+
+public:
+	enum Direction {
+		up, down, left, right,
+		upper_left, upper_right, lower_left, lower_right, dir_count
+	};
+	enum Min_MaxXY {
+		max_x, min_x, max_y, min_y
+	};
+
+	std::vector<cocos2d::Label*> labelvec;
+	int min_max_xy_position[4];							// Min_MaxXY 값으로 접근
+
+private:
+	GameState checkWinColor();
+	void checkBoard(const Stone s);
+	void checkStone(const int x, const int y);
+	void checkWidth();
+	void checkHeight();
+	void checkSlash();
+	void checkBackSlash();
+	void activeAroundStone(const cocos2d::Vec2 &pos);
+
+private:
+	const int board_size_x;
+	const int board_size_y;
+	float margin_pixel;			// 바둑판 여백 픽셀
+	float interval_pixel;			// 바둑판 점 간격 픽셀
+
+	CComputer* computer;				// 컴퓨터 멤버변수
+	cocos2d::Sprite* base_sprite;
+	float scale;						// 전체 이미지 스케일값
+	int check_count;					// ********오목 체크, 멤버가 좋은가, 함수간 인자로 주는게 좋은가?
+	Stone check_stone_color;			// 색상 저장 변수 ********** 상동**********
+	bool check_win;						// 승리 체크
+	cocos2d::Vec2 str_position;			// 바둑판 시작점
+	cocos2d::Vec2 end_position;			// 파둑판 끝점
+	
+	int count;							// ************* 디버그용
 };
 #endif 

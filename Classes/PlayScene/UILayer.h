@@ -6,51 +6,56 @@
 #include "enumHeader.h"
 
 class CUILayer : public cocos2d::Layer {
-private:
-	enum UiNum {
-		imgview,
-	};
-
-	int m_Player;
-	bool m_Pause;
-	bool m_State;
-	bool m_bReStart;
-	bool m_bBGMState;
-	bool m_bEffectState;
-
-private:
-	void CreateUI();
-	
-	void ButtonEnabled(int color);
-	void bt1OnTouch(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-	void bt2OnTouch(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-	void bt3OnTouch(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-	void btRestartGameOnTouch(cocos2d::Ref* sender);
-	void btSoundOnTouch(cocos2d::Ref* sender);
-	void btOffGameOnTouch(cocos2d::Ref* sender);
-	void btOptionOnTouch(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
-	void CreateOptionPanel();
-
-	void CreateMenu();
-	void CreateSoundMenu();
-
-	void BGM_ON_OFF(Ref* sender);
-	void Effect_ON_OFF(Ref* sender);
-	void btSoundMenuBackOnTouch(Ref* sender);
-
 public:
 	CUILayer();
 	virtual ~CUILayer();
 	virtual bool init();
 	CREATE_FUNC(CUILayer);
-	
-	void GaemResult(const int s);
-	void ResetUILayer();
-	int getPlayerColor() const;
+
+	void initUILayer();
+	void createGaemResult(const GameState s);
+	Stone getPlayerColor() const;
 	bool getPause() const;
+	//bool getSeleteColor() const;
+	//void setSeleteColor(bool b);
 	bool getReStart() const;
 	bool getBGMState() const;
 	bool getEffectState() const;
+	void setSoundOption(const bool bgm, const bool effect);
+	void setRunActionrCountDownFunc(std::function<void(void)> countdown);
+	void setRunActionrPauseFunc(std::function<void(void)> pause);
+	void setRunActionrRestartFunc(std::function<void(void)> restart);
+
+private:
+	void CreateUI();
+	void createMenu();
+	void createSoundMenu();
+	void createOptionMenu();
+
+	void enabledColorSeleteButton(const Stone color);
+	void onTouchBlackSeleteButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+	void onTouchWhiteSeleteButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+	void onTouchColorCheckButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+	void onTouchOptionMenuButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+	void onTouchRestartGameButton(cocos2d::Ref* sender);
+	void onTouchSoundMenuButton(cocos2d::Ref* sender);
+	void onTouchQuitButton(cocos2d::Ref* sender);
+	void onTouchBGM_ON_OFF_Toggle(Ref* sender);
+	void onToucheffect_ON_OFF_Toggle(Ref* sender);
+	void onTouchSoundMenuBackButton(Ref* sender);
+
+	std::function<void(void)>RunActionrCountDown;
+	std::function<void(void)>RunActionrPause;
+	std::function<void(void)>RunActionrRestart;
+
+private:
+	Stone player_color;
+	bool pause_check;
+	//bool selete_color_check;
+	bool state_check;
+	//bool restart_check;
+	bool bgm_state_check_check;
+	bool effect_State_check;
 };
 
 #endif

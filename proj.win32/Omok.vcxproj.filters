@@ -199,5 +199,8 @@
     <ClInclude Include="..\Classes\MenuScene\MenuScene.h">
       <Filter>src\MenuScene</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\PlayScene\DataManager.h">
+      <Filter>src\PlayScene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

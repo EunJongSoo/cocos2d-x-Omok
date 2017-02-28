@@ -2,11 +2,11 @@
 #define _ENUM_HEADER_H_
 
 enum GameState {
-	BlackWin, WhiteWin, Win = 5, TimeOver = 10, error
+	black_win, white_win, time_over = 10, error
 };
 
 enum Stone { 
-	Black, White, Emptied,
+	black, white, emptied,
 };
 
 #endif

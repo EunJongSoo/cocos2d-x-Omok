@@ -1,65 +1,52 @@
 #include "StoneSprite.h"
 
-CStoneSprite::CStoneSprite() : m_Stone(Emptied), m_iScore(0), m_bActive(false)
-                               /*,ix(0), iy(0)*/ {}
+CStoneSprite::CStoneSprite() : stone(Stone::emptied), score(0), active(false) {}
 CStoneSprite::~CStoneSprite() {}
 
 bool CStoneSprite::init() {
 	if (!Sprite::init()) return false;
-	
 	return true;
 }
 
-bool CStoneSprite::initSprite(cocos2d::Vec2 pos, const float scale, const int stone) {
-	if (m_Stone == Emptied) {
+bool CStoneSprite::initSprite(const float scale, const Stone s) {
+	if (stone == Stone::emptied) {
 		// 착수를 한 바둑돌의 이미지를 불러서
-		switch (stone) {
-		case Black:
-			if (!initWithFile("Black.png"))	return false;
+		switch (s) {
+		case Stone::black:
+			if (!initWithFile("etc/Black.png"))	return false;
 			break;
-		case White:
-			if (!initWithFile("White.png"))	return false;
+		case Stone::white:
+			if (!initWithFile("etc/White.png"))	return false;
 			break;
 		default:
 			return false;
 		}
-
-		// 정해진 위치에 바둑돌을 띄워준다.
-		m_Stone = stone;
-		m_bActive = false;
+		stone = s;
+		active = false;
 		setAnchorPoint(cocos2d::Vec2(0.5f, 0.5f));
-		setPosition(pos);
 		setScale(0.5 * scale);
 		return true;
 	}
 	return false;
 }
 
-bool CStoneSprite::initSprite(const float x, const float y, const float scale, const int stone) {
-	return initSprite(cocos2d::Vec2(x, y), scale, stone);
+int CStoneSprite::getScore() const {
+	return score;
 }
-
-void CStoneSprite::setScore(const int score) {
-	m_iScore = score;
-}
-
-void CStoneSprite::setActive(const bool b) {
-	m_bActive = b;
+void CStoneSprite::setScore(const int i) {
+	score = i;
 }
 
 bool CStoneSprite::getActive() const {
-	return m_bActive;
+	return active;
+}
+void CStoneSprite::setActive(const bool b) {
+	active = b;
 }
 
-int CStoneSprite::getScore() const {
-	return m_iScore;
+Stone CStoneSprite::getStoneType() const {
+	return stone;
 }
-
-int CStoneSprite::getStoneType() const {
-	return m_Stone;
-}
-
-
 
 //int CStoneSprite::getXpos() const {
 //	return ix;

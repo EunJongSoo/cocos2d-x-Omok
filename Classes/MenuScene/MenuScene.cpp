@@ -42,7 +42,7 @@ void CMenuScene::onTouch(Ref* sender, Widget::TouchEventType type) {
 		CCLOG("ENDED");
 		CallFunc* call = CallFunc::create(CC_CALLBACK_0(CMenuScene::replaceScene, this));
 		FadeOut* fadeout = FadeOut::create(0.5f);
-		Sequence* seq = Sequence::create(fadeout, fadeout, NULL);
+		Sequence* seq = Sequence::create(fadeout, call, NULL);
 		Node* node = this->getChildByTag(0);
 		node->runAction(seq);
 		break;
