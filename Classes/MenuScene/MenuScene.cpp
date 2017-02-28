@@ -20,10 +20,10 @@ bool CMenuScene::init() {
 	addChild(rootNode, 0, 0);
 
 	// Node에서 STARTBUTTON을 찾아서 변수에 저장한다.
-	Button* startButton = (Button*)rootNode->getChildByName("STARTBUTTON");
-	Button* exitButton = (Button*)rootNode->getChildByName("STARTBUTTON");
+	Button* start_button = (Button*)rootNode->getChildByName("STARTBUTTON");
+	Button* exit_button = (Button*)rootNode->getChildByName("STARTBUTTON");
 	// 버튼을 눌렀을때의 이벤트를 추가한다.
-	startButton->addTouchEventListener(CC_CALLBACK_2(CMenuScene::onTouch, this));
+	start_button->addTouchEventListener(CC_CALLBACK_2(CMenuScene::onTouch, this));
 
 	return true;
 }
@@ -42,7 +42,7 @@ void CMenuScene::onTouch(Ref* sender, Widget::TouchEventType type) {
 		CCLOG("ENDED");
 		CallFunc* call = CallFunc::create(CC_CALLBACK_0(CMenuScene::replaceScene, this));
 		FadeOut* fadeout = FadeOut::create(0.5f);
-		Sequence* seq = Sequence::create(fadeout, call, NULL);
+		Sequence* seq = Sequence::create(fadeout, fadeout, NULL);
 		Node* node = this->getChildByTag(0);
 		node->runAction(seq);
 		break;

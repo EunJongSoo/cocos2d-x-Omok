@@ -5,30 +5,16 @@
 using namespace cocos2d;
 using namespace std;
 
-CComputer::CComputer() {
-	// ********** 디버그용 변수
-	// ********** 디버그용 변수
-	// ********** 디버그용 변수
-	// ********** 디버그용 변수
-	count1 = 0;
-	srand((unsigned)time(NULL));
-}
-CComputer::~CComputer() {}
-
 #define MAXVAL(i, j) i = j + 2 < 18 ? j + 2 : 18
 #define MINVAL(i, j) i = j - 2 > 0 ? j - 2 : 0
 
-// 점수를 세분화 해서 우선순위를 더 정하기 쉽도록 하기
-// 점수를 세분화 해서 우선순위를 더 정하기 쉽도록 하기
-// 점수를 세분화 해서 우선순위를 더 정하기 쉽도록 하기
+#define DEBUG_MODE 1;
 
-// 컴퓨터가 먼저 시작하면 게임 중지됨
-// 컴퓨터가 먼저 시작하면 게임 중지됨
-// 컴퓨터가 먼저 시작하면 게임 중지됨
-// 컴퓨터가 먼저 시작하면 게임 중지됨
-// 컴퓨터가 먼저 시작하면 게임 중지됨
-// 컴퓨터가 먼저 시작하면 게임 중지됨
-// 컴퓨터가 먼저 시작하면 게임 중지됨
+CComputer::CComputer() : previous_color{ 2, 2, 2,2 }, count1(0) {
+	srand((unsigned)time(NULL));
+}
+
+CComputer::~CComputer() {}
 
 void CComputer::CalculationScore(Node* node) {
 	CStoneLayer* stonelayer = dynamic_cast<CStoneLayer*>(node);
@@ -50,14 +36,14 @@ void CComputer::CalculationScore(Node* node) {
 						sprite = stonelayer->SearcharoundSprite(x, y, dir, depth);
 						if (sprite == nullptr) break;
 						int color = sprite->getStoneType();
-						PreviousColor[depth - 1] = color;
+						previous_color[depth - 1] = color;
 
 						// 돌이 없다.
 						if (color == Stone::Emptied) {
 							if (depth != 1) {
 								// 2번 연속 비었는가?
-								if (color == PreviousColor[depth - 2]) break;
-								score[PreviousColor[depth - 2]] += (depth - 2);
+								if (color == previous_color[depth - 2]) break;
+								score[previous_color[depth - 2]] += (depth - 2);
 							}
 						}
 						// 돌이 있다. 1~4
@@ -65,10 +51,10 @@ void CComputer::CalculationScore(Node* node) {
 							score[color] += 1;
 						}
 						else {
-							if (PreviousColor[depth - 1] == PreviousColor[depth - 2]) {
+							if (previous_color[depth - 1] == previous_color[depth - 2]) {
 								score[color] += (depth*1.8f);
 							}
-							else if (depth > 2 && PreviousColor[depth - 1] == PreviousColor[depth - 3]) {
+							else if (depth > 2 && previous_color[depth - 1] == PreviousColor[depth - 3]) {
 								score[color] += 1;
 							}
 							else if (PreviousColor[depth - 1] != Stone::Emptied) {
@@ -78,7 +64,7 @@ void CComputer::CalculationScore(Node* node) {
 						}
 					}
 					for (int i = 0; i < 4; ++i) {
-						PreviousColor[i] = Stone::Emptied;
+						previous_color[i] = Stone::Emptied;
 					}
 					maxscore[0] += score[0];
 					maxscore[1] += score[1];
@@ -129,6 +115,12 @@ Vec2 CComputer::ComputerTurn(Node* node) {
 	if (vector.size() == 0) vector.push_back(Vec2(9, 9));
 	return vector[rand() % vector.size()];
 }
+
+
+// 기존 계산 코드 주석처리
+// 기존 계산 코드 주석처리
+// 기존 계산 코드 주석처리
+// 기존 계산 코드 주석처리
 
 // 1.  첫번째 돌이 비었다.		* 검사 없음, 점수 없음
 // 1.1 두번째 돌도 비었다.		* 검사 없음, 점수 없음
