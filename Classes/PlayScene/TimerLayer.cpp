@@ -6,8 +6,6 @@
 
 using namespace cocos2d;
 
-class CPlayScene;
-
 CTimerLayer::CTimerLayer():count_down(COUNT_DOWN), timer(FALL_BACK_TIME) {
 	runActionGameUpdate = NULL;
 
@@ -26,13 +24,13 @@ bool CTimerLayer::init() {
 
 	Size winSize = CCDirector::getInstance()->getWinSize();
 	
-	count_down_label = cocos2d::Label::create();
+	count_down_label = Label::create();
 	count_down_label->setPosition(Vec2(winSize / 2));
 	count_down_label->setSystemFontSize(SYSTEM_FONT_SIZE);
 	count_down_label->setVisible(false);
 	this->addChild(count_down_label);
 
-	timer_label = cocos2d::Label::create();
+	timer_label = Label::create();
 	timer_label->setPosition(Vec2(winSize.width / 10 ,winSize.height / 1.1));
 	timer_label->setSystemFontSize(SYSTEM_FONT_SIZE);
 	timer_label->setVisible(false);

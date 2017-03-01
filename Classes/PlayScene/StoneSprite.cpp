@@ -3,6 +3,8 @@
 CStoneSprite::CStoneSprite() : stone(Stone::emptied), score(0), active(false) {}
 CStoneSprite::~CStoneSprite() {}
 
+using namespace cocos2d;
+
 bool CStoneSprite::init() {
 	if (!Sprite::init()) return false;
 	return true;
@@ -23,11 +25,22 @@ bool CStoneSprite::initSprite(const float scale, const Stone s) {
 		}
 		stone = s;
 		active = false;
-		setAnchorPoint(cocos2d::Vec2(0.5f, 0.5f));
+		setAnchorPoint(Vec2(0.5f, 0.5f));
 		setScale(0.5 * scale);
 		return true;
 	}
 	return false;
+}
+
+void CStoneSprite::runActionBlinkingSprite(){
+	FadeTo* fade_to = FadeTo::create(0.5, 100);
+	RepeatForever* repeat_forever = RepeatForever::create(fade_to);
+	repeat_forever->setTag(1);
+	this->runAction(repeat_forever);
+}
+
+void CStoneSprite::stopBlinkingSprite() {
+	this->stopActionByTag(1);
 }
 
 int CStoneSprite::getScore() const {
@@ -35,6 +48,13 @@ int CStoneSprite::getScore() const {
 }
 void CStoneSprite::setScore(const int i) {
 	score = i;
+}
+
+int CStoneSprite::getPos() const {
+	return pos;
+}
+void CStoneSprite::setPos(const int i) {
+	pos = i;
 }
 
 bool CStoneSprite::getActive() const {

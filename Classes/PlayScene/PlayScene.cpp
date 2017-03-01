@@ -143,7 +143,7 @@ void CPlayScene::saveData() const {
 	data_manager->outputData();
 }
 
-void CPlayScene::endGame(GameState s) {
+void CPlayScene::endGame(const GameState &s) {
 	pause_check = true;
 	game_start_check = false;
 	this->unscheduleGameUpdate();

@@ -27,7 +27,7 @@ private:
 	void gameUpdate(const float dt);
 	Stone oppositionColor(const Stone &s) const;
 	void saveData() const;
-	void endGame(GameState s);
+	void endGame(const GameState &s);
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);

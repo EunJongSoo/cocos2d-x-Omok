@@ -31,24 +31,40 @@ public:
 		max_x, min_x, max_y, min_y
 	};
 
-	std::vector<cocos2d::Label*> labelvec;
+	struct MyStruct
+	{
+		MyStruct(int _size) : size(_size), sum_pos(0), sprite{ 0, } {
+		}
+		CStoneSprite* sprite[6];
+		int size;
+		int sum_pos;
+	};
+
 	int min_max_xy_position[4];							// Min_MaxXY 값으로 접근
+	std::vector<cocos2d::Label*> labelvec;
+	std::vector<MyStruct> my_struct_vector;
 
 private:
 	GameState checkWinColor();
 	void checkBoard(const Stone s);
-	void checkStone(const int x, const int y);
+	void checkStone(const int x, const int y, const Direction dir);
 	void checkWidth();
 	void checkHeight();
 	void checkSlash();
 	void checkBackSlash();
 	void activeAroundStone(const cocos2d::Vec2 &pos);
 
+	void func(const int x, const int y, const int count, const Direction dir);
+	void overlapCheckVector(const MyStruct &mystr);
+	void BlinkingStoneSprite();
+	void runActionBlinkingSprite(const int i);
+	void eraseMyStructVector(const int i);
+
 private:
 	const int board_size_x;
 	const int board_size_y;
-	float margin_pixel;			// 바둑판 여백 픽셀
-	float interval_pixel;			// 바둑판 점 간격 픽셀
+	float margin_pixel;					// 바둑판 여백 픽셀
+	float interval_pixel;				// 바둑판 점 간격 픽셀
 
 	CComputer* computer;				// 컴퓨터 멤버변수
 	float scale;						// 전체 이미지 스케일값
