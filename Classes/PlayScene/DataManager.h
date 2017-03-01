@@ -1,5 +1,6 @@
 // rapidjson 튜토리얼
 // https://www.slideshare.net/PaulKim81/rapid-json-tutorial?ref=http://jacking.tistory.com/1431
+// http://rapidjson.org/md_doc_tutorial.html 튜토리얼
 // http://rapidjson.org/md_doc_pointer.html Json Pointer로 추가 하는 부분
 // http://rapidjson.org/md_doc_stream.html  입 출력 부분
 
@@ -25,9 +26,12 @@ public:
 		ifstream ifs("data/optiondata.json");
 		IStreamWrapper isw(ifs);
 		Document d;
-		if (!ifs.is_open()) 
+		if (!ifs.is_open()) {
+			Pointer("/open").Set(d, false);
 			return d;
+		}
 		d.ParseStream(isw);
+		Pointer("/open").Set(d, true);
 		return d;
 	}
 

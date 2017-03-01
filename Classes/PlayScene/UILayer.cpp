@@ -281,6 +281,7 @@ void CUILayer::setSoundOption(const bool bgm, const bool effect) {
 		SimpleAudioEngine::getInstance()->playBackgroundMusic("sound/bgm/01_01_trial.mp3", true);
 	}
 	if (!effect) {
-		SimpleAudioEngine::getInstance()->setEffectsVolume(0);
+		SimpleAudioEngine::getInstance()->preloadEffect("sound/effect/ui-sound8.wav");
+		SimpleAudioEngine::getInstance()->setEffectsVolume(0.0f);
 	}
 }

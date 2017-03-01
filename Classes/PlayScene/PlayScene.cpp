@@ -11,7 +11,6 @@ using namespace cocos2d;
 CPlayScene::CPlayScene() : player_stone_color(Stone::emptied), now_turn(Stone::black),
 pause_check(true), game_start_check(false) {}
 CPlayScene::~CPlayScene() {
-	
 	this->saveData();
 	CC_SAFE_DELETE(data_manager);
 }
@@ -55,9 +54,13 @@ bool CPlayScene::init() {
 
 	data_manager = new CDataManager();
 	Document d = data_manager->loadData();
-	/*if (d. == NULL)
-		return true;*/
-	ui_layer->setSoundOption(false, false);
+	if (!d["open"].GetBool()) {
+		ui_layer->setSoundOption(true, true);
+		return true;
+	}
+	// 효과음 조절
+	// 버튼 표현방법 변경
+	ui_layer->setSoundOption(d["bgm"].GetBool(), d["effect"].GetBool());
 
 	return true;
 }
@@ -125,7 +128,6 @@ void CPlayScene::runActionComputer() {
 
 void CPlayScene::gameUpdate(const float dt) {
 	if (!pause_check && now_turn == computer_stone_color && game_start_check) {
-		timer_layer->resetTimer();
 		runActionComputer();	// 컴퓨터 턴
 		timer_layer->resetTimer();
 	}
@@ -136,8 +138,8 @@ Stone CPlayScene::oppositionColor(const Stone &s) const {
 }
 
 void CPlayScene::saveData() const {
-	data_manager->saveData("/BGM", ui_layer->getBGMState());
-	data_manager->saveData("/Effect", ui_layer->getEffectState());
+	data_manager->saveData("/bgm", ui_layer->getBGMState());
+	data_manager->saveData("/effect", ui_layer->getEffectState());
 	data_manager->outputData();
 }
 
@@ -161,7 +163,7 @@ void CPlayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event) {
 			stone_layer->calculationPosition(touch->getLocation(), player_stone_color);
 			// 착수 성공하면 유저의 반대색으로 턴을 바꿈
 			now_turn = oppositionColor(player_stone_color);
-			runActionGameUpdate();
+			timer_layer->resetTimer();
 		}
 	}
 	catch (GameState e) {
