@@ -17,11 +17,11 @@ public:
 	CREATE_FUNC(CPlayScene);
 
 private:
+	float createBoard();
 	void runActionGameUpdate();
 	void unscheduleGameUpdate();
 	void runActionTimeOver();
 	void runActionCountDown();
-	void runActionPause();
 	void runActionRestart();
 	void runActionComputer();
 	void gameUpdate(const float dt);
@@ -41,5 +41,7 @@ private:
 	Stone player_stone_color;		// 플레이어 색
 	Stone computer_stone_color;		// 컴퓨터 색
 	Stone now_turn;					// 현재 차례 색
+	bool pause_check;
+	bool game_start_check;
 };
 #endif

@@ -20,6 +20,9 @@ public:
 	void setActive(const bool b);
 
 	Stone getStoneType() const;
+
+	int ix;
+	int iy;
 private:
 	int score;
 	bool active;

@@ -15,23 +15,19 @@ public:
 	void initUILayer();
 	void createGaemResult(const GameState s);
 	Stone getPlayerColor() const;
-	bool getPause() const;
-	//bool getSeleteColor() const;
-	//void setSeleteColor(bool b);
-	bool getReStart() const;
+	void setPauseCheck(bool* b);
 	bool getBGMState() const;
 	bool getEffectState() const;
 	void setSoundOption(const bool bgm, const bool effect);
 	void setRunActionrCountDownFunc(std::function<void(void)> countdown);
-	void setRunActionrPauseFunc(std::function<void(void)> pause);
 	void setRunActionrRestartFunc(std::function<void(void)> restart);
 
 private:
-	void CreateUI();
-	void createMenu();
-	void createSoundMenu();
+	void createUI();
 	void createOptionMenu();
-
+	void createSoundMenu();
+	void visibleOptionMenu();
+	void visibleSoundMenu();
 	void enabledColorSeleteButton(const Stone color);
 	void onTouchBlackSeleteButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
 	void onTouchWhiteSeleteButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
@@ -45,15 +41,13 @@ private:
 	void onTouchSoundMenuBackButton(Ref* sender);
 
 	std::function<void(void)>RunActionrCountDown;
-	std::function<void(void)>RunActionrPause;
 	std::function<void(void)>RunActionrRestart;
 
 private:
 	Stone player_color;
-	bool pause_check;
-	//bool selete_color_check;
-	bool state_check;
-	//bool restart_check;
+	bool* pause_check;
+	bool color_selete_state_check;
+	bool menu_visible_check;
 	bool bgm_state_check_check;
 	bool effect_State_check;
 };

@@ -13,7 +13,7 @@ using namespace CocosDenshion;
 
 CStoneLayer::CStoneLayer() : board_size_x(BOARD_SIZE_X), board_size_y(BOARD_SIZE_Y), 
 								margin_pixel(MARGIN_PIXEL), interval_pixel(INTERVAL_PIXEL), 
-									min_max_xy_position{ 10, 8, 10, 8 }, count(0) {}
+									min_max_xy_position{ 10, 8, 10, 8 }, count(0), scale(1.0f){}
 CStoneLayer::~CStoneLayer() {
 	CC_SAFE_DELETE(computer);
 }
@@ -22,32 +22,21 @@ bool CStoneLayer::init() {
 	if (!Layer::init())
 		return false;
 	computer = new CComputer();
+	return true;
+}
 
-	base_sprite = Sprite::create("etc/Base.jpg");
-	Size winsize = Director::getInstance()->getWinSize();		// 화면 크기
-	Size basesize = base_sprite->getContentSize();						// 바둑판 이미지의 크기
-
-	float widthscale = winsize.width / basesize.width;
-	float heightscale = winsize.height / basesize.height;
-	scale = widthscale > heightscale ? heightscale : widthscale;
-
+void CStoneLayer::calculationBoardSize(const Size &basesize, const float _scale) {
+	scale = _scale;
+	Size win_size = CCDirector::getInstance()->getWinSize();
+	Size size = basesize * scale;
+	str_position = Vec2(win_size.width / 2 - size.width / 2,
+		win_size.height/2 - size.height / 2);
+	end_position = Vec2(win_size.width /2 + size.width / 2,
+		win_size.height/2 + size.height / 2);
+	
 	margin_pixel = margin_pixel * scale;
 	interval_pixel = interval_pixel * scale;
-
-	base_sprite->setAnchorPoint(Vec2(0.5, 0.5));
-	base_sprite->setScale(scale);
-	base_sprite->setPosition(winsize / 2);
-	basesize = basesize * scale;
-
-	// 바둑판 시작점과, 끝점의 값을 저장해둔다.
-	// 바둑돌을 둘때 사용한다.
-	str_position = Vec2(base_sprite->getPosition().x - basesize.width / 2,
-		base_sprite->getPosition().y - basesize.height / 2);
-	end_position = Vec2(base_sprite->getPosition().x + basesize.width / 2,
-		base_sprite->getPosition().y + basesize.height / 2);
-
 	initStoneLayer();
-	return true;
 }
 
 void CStoneLayer::initStoneLayer() {
@@ -56,7 +45,7 @@ void CStoneLayer::initStoneLayer() {
 	min_max_xy_position[1] = 8;
 	min_max_xy_position[2] = 10;
 	min_max_xy_position[3] = 8;
-	if (this->getChildrenCount() > 0)
+	if(this->getChildrenCount() > 0)
 		this->removeAllChildren();
 #ifdef DEBUG_MODE == 1
 	labelvec.clear();
@@ -70,7 +59,11 @@ void CStoneLayer::initStoneLayer() {
 			pos_x = x * interval_pixel + margin_pixel + str_position.x;
 			pos_y = y * interval_pixel + margin_pixel + str_position.y;
 			sprite->setPosition(pos_x, pos_y);
-			this->addChild(sprite, 1);
+			this->addChild(sprite, 1, board_size_y * y + x);
+			sprite->ix = x;
+			sprite->iy = y;
+
+			CCLOG("tag : %d, pos : %d", sprite->getTag(), board_size_y * sprite->iy + sprite->ix);
 #ifdef DEBUG_MODE == 1
 			Label* label = Label::create();
 			label->setPosition(pos_x, pos_y);
@@ -82,10 +75,9 @@ void CStoneLayer::initStoneLayer() {
 #endif
 		}
 	}
-	addChild(base_sprite, 0);
 }
 
-void CStoneLayer::positionCalculation(const Vec2 &pos, const Stone s) {
+void CStoneLayer::calculationPosition(const Vec2 &pos, const Stone s) {
 	// 바둑돌을 착수한 위치가 바둑판 바깥쪽이면 착수 실패
 	if (pos < str_position || pos > end_position) {
 #ifdef DEBUG_MODE == 1

@@ -5,18 +5,14 @@ using namespace cocos2d;
 using namespace ui;
 using namespace CocosDenshion;
 
-CUILayer::CUILayer() : pause_check(true), /*selete_color_check(false),*/state_check(true), /*restart_check(false),*/
-bgm_state_check_check(false),effect_State_check(true) {
+CUILayer::CUILayer() : color_selete_state_check(true), menu_visible_check(false), 
+bgm_state_check_check(true), effect_State_check(true) {
 	RunActionrCountDown = NULL;
 }
 CUILayer::~CUILayer() {}
 
 void CUILayer::setRunActionrCountDownFunc(std::function<void(void)> countdown) {
 	RunActionrCountDown = countdown;
-}
-
-void CUILayer::setRunActionrPauseFunc(std::function<void(void)> pause) {
-	RunActionrPause = pause;
 }
 
 void CUILayer::setRunActionrRestartFunc(std::function<void(void)> restart) {
@@ -26,12 +22,11 @@ void CUILayer::setRunActionrRestartFunc(std::function<void(void)> restart) {
 bool CUILayer::init() {
 	if (!Layer::init())
 		return false;
-	this->CreateUI();
+	this->createUI();
 	return true;
 }
 
 void CUILayer::initUILayer() {
-	pause_check = true;
 	//restart_check = false;
 	//selete_color_check = false;
 
@@ -66,12 +61,12 @@ void CUILayer::createGaemResult(const GameState s) {
 	Label* label = (Label*)this->getChildByName("resultstr");
 	label->setString(str);
 	label->setVisible(true);
-	createOptionMenu();
+	visibleOptionMenu();
 	Button* bt4 = (Button*)this->getChildByName("option");
 	bt4->setEnabled(false);
 }
 
-void CUILayer::CreateUI() {
+void CUILayer::createUI() {
 	cocos2d::ui::Button* bt1 = ui::Button::create("Button/grey_panel.png","Button/yellow_panel.png","etc/Black.png");
 	bt1->setPosition(Vec2(400, 400));
 	bt1->addTouchEventListener(CC_CALLBACK_2(CUILayer::onTouchBlackSeleteButton, this));
@@ -105,11 +100,11 @@ void CUILayer::CreateUI() {
 	label->setVisible(false);
 	this->addChild(label, 5, "resultstr");
 
-	createMenu();
+	createOptionMenu();
 	createSoundMenu();
 }
 
-void CUILayer::createMenu() {
+void CUILayer::createOptionMenu() {
 	Label* label1 = Label::create();
 	label1->setString("restart");
 	label1->setSystemFontSize(50);
@@ -149,28 +144,39 @@ void CUILayer::createSoundMenu() {
 	this->addChild(soundmenu, 5, "soundmenu");
 }
 
-void CUILayer::createOptionMenu() {
-	pause_check = !pause_check;
+void CUILayer::visibleOptionMenu() {
 	Menu* menu = (Menu*)this->getChildByName("menu");
-	menu->setVisible(pause_check);
-	if (!pause_check) {
-		Menu* soundmenu = (Menu*)this->getChildByName("soundmenu");
-		soundmenu->setVisible(pause_check);
+	if (!menu_visible_check) {
+		menu_visible_check = true;
+		*pause_check = true;
+		menu->setVisible(menu_visible_check);
 	}
+	else {
+		*pause_check = false;
+		menu_visible_check = false;
+		menu->setVisible(menu_visible_check);
+		Menu* soundmenu = (Menu*)this->getChildByName("soundmenu");
+		soundmenu->setVisible(menu_visible_check);
+	}
+}
+
+void CUILayer::visibleSoundMenu() {
+	Menu* menu = (Menu*)this->getChildByName("menu");
+	menu->setVisible(false);
+	Menu* soundmenu = (Menu*)this->getChildByName("soundmenu");
+	soundmenu->setVisible(true);
 }
 
 void CUILayer::enabledColorSeleteButton(const Stone color) {
 	// 색상을 받아서 저장하고
 	player_color = color;
-	
 	// 색상이 검은색이면 상태값을 flase, 아니면 true를 저장한다.
-	player_color == Stone::black ? state_check = false : state_check = true;
-
+	player_color == Stone::black ? color_selete_state_check = false : color_selete_state_check = true;
 	// 상태값으로 버튼1과 버튼2의 상태를 반대로 보이도록 한다.
 	Button* bt1 = (Button*)this->getChildByName("black");
-	bt1->setEnabled(state_check);
+	bt1->setEnabled(color_selete_state_check);
 	Button* bt2 = (Button*)this->getChildByName("white");
-	bt2->setEnabled(!state_check);
+	bt2->setEnabled(!color_selete_state_check);
 }
 
 void CUILayer::onTouchBlackSeleteButton(Ref* sender, Widget::TouchEventType type) {
@@ -198,7 +204,6 @@ void CUILayer::onTouchColorCheckButton(Ref* sender, Widget::TouchEventType type)
 			bt1->setVisible(false);
 			bt2->setVisible(false);
 			bt3->setVisible(false);
-			pause_check = false;
 			Button* bt4 = (Button*)this->getChildByName("option");
 			bt4->setVisible(true);
 			RunActionrCountDown();
@@ -208,20 +213,17 @@ void CUILayer::onTouchColorCheckButton(Ref* sender, Widget::TouchEventType type)
 
 void CUILayer::onTouchOptionMenuButton(Ref* sender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
-		createOptionMenu();
+		visibleOptionMenu();
 	}
 }
 
 void CUILayer::onTouchRestartGameButton(Ref* sender) {
-	//restart_check = true;
+	menu_visible_check = false;
 	RunActionrRestart();
 }
 
 void CUILayer::onTouchSoundMenuButton(Ref* sender) {
-	Menu* menu = (Menu*)this->getChildByName("menu");
-	menu->setVisible(false);
-	Menu* soundmenu = (Menu*)this->getChildByName("soundmenu");
-	soundmenu->setVisible(true);
+	visibleSoundMenu();
 }
 
 void CUILayer::onTouchQuitButton(Ref* sender) {
@@ -260,21 +262,9 @@ Stone CUILayer::getPlayerColor() const {
 	return player_color;
 }
 
-bool CUILayer::getPause() const {
-	return pause_check;
+void CUILayer::setPauseCheck(bool* b) {
+	pause_check = b;
 }
-
-//bool CUILayer::getSeleteColor() const {
-//	return selete_color_check;
-//}
-//
-//void CUILayer::setSeleteColor(bool b) {
-//	selete_color_check = b;
-//}
-
-//bool CUILayer::getReStart() const {
-//	return restart_check;
-//}
 
 bool CUILayer::getBGMState() const {
 	return bgm_state_check_check;

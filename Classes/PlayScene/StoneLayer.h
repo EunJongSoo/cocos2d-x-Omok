@@ -17,7 +17,8 @@ public:
 	void initStoneLayer();
 	void createStone(const Stone s);
 	void createStone(const cocos2d::Vec2 &pos, const Stone s);
-	void positionCalculation(const cocos2d::Vec2 &pos, const Stone s);
+	void calculationPosition(const cocos2d::Vec2 &pos, const Stone s);
+	void calculationBoardSize(const cocos2d::Size &basesize, const float scale);
 	CStoneSprite* getSprite(const int x, const int y);
 	CStoneSprite* searchAroundSprite(const float x, const float y, const int dir, const int depth);
 
@@ -50,7 +51,6 @@ private:
 	float interval_pixel;			// 바둑판 점 간격 픽셀
 
 	CComputer* computer;				// 컴퓨터 멤버변수
-	cocos2d::Sprite* base_sprite;
 	float scale;						// 전체 이미지 스케일값
 	int check_count;					// ********오목 체크, 멤버가 좋은가, 함수간 인자로 주는게 좋은가?
 	Stone check_stone_color;			// 색상 저장 변수 ********** 상동**********

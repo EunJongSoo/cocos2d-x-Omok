@@ -1,5 +1,5 @@
-#define COUNT_DOWN 4.0f
-#define FALL_BACK_TIME 6.0f
+#define COUNT_DOWN 3
+#define FALL_BACK_TIME 5
 #define SYSTEM_FONT_SIZE 50.0f
 
 #include "PlayScene\TimerLayer.h"
@@ -8,8 +8,7 @@ using namespace cocos2d;
 
 class CPlayScene;
 
-CTimerLayer::CTimerLayer():countDown(COUNT_DOWN), timer(FALL_BACK_TIME), 
-							gameStartCheck(false), timeOverCheck(false) {
+CTimerLayer::CTimerLayer():count_down(COUNT_DOWN), timer(FALL_BACK_TIME) {
 	runActionGameUpdate = NULL;
 
 }
@@ -27,77 +26,82 @@ bool CTimerLayer::init() {
 
 	Size winSize = CCDirector::getInstance()->getWinSize();
 	
-	countDownLabel = cocos2d::Label::create();
-	countDownLabel->setPosition(Vec2(winSize / 2));
-	countDownLabel->setSystemFontSize(SYSTEM_FONT_SIZE);
-	countDownLabel->setVisible(false);
-	this->addChild(countDownLabel);
+	count_down_label = cocos2d::Label::create();
+	count_down_label->setPosition(Vec2(winSize / 2));
+	count_down_label->setSystemFontSize(SYSTEM_FONT_SIZE);
+	count_down_label->setVisible(false);
+	this->addChild(count_down_label);
 
-	timerLabel = cocos2d::Label::create();
-	timerLabel->setPosition(Vec2(winSize.width / 10 ,winSize.height / 1.1));
-	timerLabel->setSystemFontSize(SYSTEM_FONT_SIZE);
-	timerLabel->setVisible(false);
-	this->addChild(timerLabel);
+	timer_label = cocos2d::Label::create();
+	timer_label->setPosition(Vec2(winSize.width / 10 ,winSize.height / 1.1));
+	timer_label->setSystemFontSize(SYSTEM_FONT_SIZE);
+	timer_label->setVisible(false);
+	this->addChild(timer_label);
 
 	return true;
 }
 
 void CTimerLayer::initTimerLayer() {
 	timer = FALL_BACK_TIME;
-	countDown = COUNT_DOWN;
-	gameStartCheck = false;
-	countDownLabel->setVisible(false);
-	timerLabel->setVisible(false);
+	count_down = COUNT_DOWN;
+	count_down_label->setVisible(false);
+	timer_label->setVisible(false);
 }
 
 void CTimerLayer::runActionCountDown() {
-	countDownLabel->setVisible(true);
-	this->schedule(schedule_selector(CTimerLayer::updateCountDown), 1.0f);
+	count_down_label->setString("3");
+	count_down_label->setVisible(true);
+	this->schedule(schedule_selector(CTimerLayer::updateCountDown), 1);
+}
+
+void CTimerLayer::stopCountDown(){
+	this->unschedule(schedule_selector(CTimerLayer::updateCountDown));
 }
 
 void CTimerLayer::runActionTimer() {
 	timer = FALL_BACK_TIME;
-	timerLabel->setVisible(true);
-	this->schedule(schedule_selector(CTimerLayer::updateTimer), 1.0f);
+	timer_label->setString("5");
+	timer_label->setVisible(true);
+	this->schedule(schedule_selector(CTimerLayer::updateTimer), 1);
+}
+
+void CTimerLayer::stopTimer() {
+	this->unschedule(schedule_selector(CTimerLayer::updateTimer));
+}
+
+void CTimerLayer::resetTimer() {
+	timer = FALL_BACK_TIME;
+	timer_label->setString("5");
 }
 
 void CTimerLayer::updateCountDown(float dt) {
-	countDown -= dt;
-	char str[4];
-	sprintf_s(str, sizeof(str), "%d", (int)countDown);
-	countDownLabel->setString(str);
-	if (countDown < 0) {
-		countDownLabel->setVisible(false);
-		runActionGameUpdate();
+	if (!*pause_check) {
+		--count_down;
+		char str[4];
+		sprintf_s(str, sizeof(str), "%d", count_down);
+		count_down_label->setString(str);
+		if (count_down < 0) {
+			count_down_label->setVisible(false);
+			runActionGameUpdate();
+			runActionTimer();
+			stopCountDown();
+		}
 	}
 }
 
 void CTimerLayer::updateTimer(float dt) {
-	timer -= dt;
-	char str[4];
-	sprintf_s(str, sizeof(str), "%d", (int)timer);
-	timerLabel->setString(str);
-	if (timer < 0) {
-		runActionTimeOver();
+	if (!*pause_check) {
+		--timer;
+		char str[4];
+		sprintf_s(str, sizeof(str), "%d", timer);
+		timer_label->setString(str);
+		if (timer == 0) {
+			stopTimer();
+			runActionTimeOver();
+		}
 	}
 }
 
-void CTimerLayer::unscheduleTimer() {
-	this->unschedule(schedule_selector(CTimerLayer::updateTimer));
-}
-
-bool CTimerLayer::getGameStartCheck() const {
-	return gameStartCheck;
-}
-
-void CTimerLayer::setGameStart(bool b) {
-	gameStartCheck = b;
-}
-
-bool CTimerLayer::getTimeOverCheck() const {
-	return timeOverCheck;
-}
-
-void CTimerLayer::setTimeOver(bool b) {
-	timeOverCheck = b;
+void CTimerLayer::setPauseCheck(bool* b) {
+	pause_check = b;
 }

@@ -13,13 +13,11 @@ public:
 
 	void initTimerLayer();
 	void runActionCountDown();
+	void stopCountDown();
 	void runActionTimer();
-	void unscheduleTimer();
-	bool getGameStartCheck() const;
-	void setGameStart(bool b);
-	bool getTimeOverCheck() const;
-	void setTimeOver(bool b);
-
+	void resetTimer();
+	void stopTimer();
+	void setPauseCheck(bool* b);
 	void setRunActionrFuncs(std::function<void(void)> gameupdate, 
 							std::function<void(void)> timeover);
 
@@ -30,11 +28,10 @@ private:
 	std::function<void(void)>runActionTimeOver;
 
 private:
-	float countDown;
-	float timer;
-	bool gameStartCheck;
-	bool timeOverCheck;
-	cocos2d::Label* countDownLabel;
-	cocos2d::Label* timerLabel;
+	int count_down;
+	int timer;
+	bool* pause_check;
+	cocos2d::Label* count_down_label;
+	cocos2d::Label* timer_label;
 };
 #endif
