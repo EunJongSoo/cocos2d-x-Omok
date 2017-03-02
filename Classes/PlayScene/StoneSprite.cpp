@@ -33,14 +33,17 @@ bool CStoneSprite::initSprite(const float scale, const Stone s) {
 }
 
 void CStoneSprite::runActionBlinkingSprite(){
-	FadeTo* fade_to = FadeTo::create(0.5, 100);
-	RepeatForever* repeat_forever = RepeatForever::create(fade_to);
-	repeat_forever->setTag(1);
+	FadeIn* fade_in = FadeIn::create(0.3f);
+	FadeOut* fade_out = FadeOut::create(0.3f);
+	Sequence* seq = Sequence::create(fade_in, fade_out, NULL);
+	RepeatForever* repeat_forever = RepeatForever::create(seq);
 	this->runAction(repeat_forever);
 }
 
 void CStoneSprite::stopBlinkingSprite() {
-	this->stopActionByTag(1);
+	this->stopAllActions();
+	FadeIn* fade_in = FadeIn::create(0.1f);
+	this->runAction(fade_in);
 }
 
 int CStoneSprite::getScore() const {

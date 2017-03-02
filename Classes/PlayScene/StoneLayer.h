@@ -15,6 +15,7 @@ public:
 	CREATE_FUNC(CStoneLayer);
 
 	void initStoneLayer();
+	void stopAllActionVector();
 	void createStone(const Stone s);
 	void createStone(const cocos2d::Vec2 &pos, const Stone s);
 	void calculationPosition(const cocos2d::Vec2 &pos, const Stone s);
@@ -24,8 +25,8 @@ public:
 
 public:
 	enum Direction {
-		up, down, left, right,
-		upper_left, upper_right, lower_left, lower_right, dir_count
+		up, down, right, left,
+		upper_left, lower_right, lower_left, upper_right, dir_count
 	};
 	enum Min_MaxXY {
 		max_x, min_x, max_y, min_y
@@ -35,14 +36,15 @@ public:
 	{
 		MyStruct(int _size) : size(_size), sum_pos(0), sprite{ 0, } {
 		}
-		CStoneSprite* sprite[6];
+		CStoneSprite* sprite[7];
 		int size;
 		int sum_pos;
+		
 	};
 
 	int min_max_xy_position[4];							// Min_MaxXY 값으로 접근
 	std::vector<cocos2d::Label*> labelvec;
-	std::vector<MyStruct> my_struct_vector;
+	std::vector<MyStruct*> my_struct_vector;
 
 private:
 	GameState checkWinColor();
@@ -54,8 +56,8 @@ private:
 	void checkBackSlash();
 	void activeAroundStone(const cocos2d::Vec2 &pos);
 
-	void func(const int x, const int y, const int count, const Direction dir);
-	void overlapCheckVector(const MyStruct &mystr);
+	void addVector(const int x, const int y, const int count, const Direction dir);
+	void overlapCheckVector(MyStruct* mystr);
 	void BlinkingStoneSprite();
 	void runActionBlinkingSprite(const int i);
 	void eraseMyStructVector(const int i);

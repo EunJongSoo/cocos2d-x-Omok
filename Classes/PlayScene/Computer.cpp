@@ -62,7 +62,7 @@ void CComputer::calculationScore(Node* node) {
 			if (sprite->getActive()) {
 				point_max_score = calculationPointMaxScore(stone_layer, x, y);
 				sprite->setScore(point_max_score);
-#ifdef DEBUG_MODE == 1
+#ifndef DEBUG_MODE == 1
 				vector<Label*> labelvector = stone_layer->labelvec;
 				Label* label = labelvector.at(19 * y + x);
 				char str[4];
@@ -75,7 +75,7 @@ void CComputer::calculationScore(Node* node) {
 			}
 		}
 	}
-#ifdef DEBUG_MODE == 1
+#ifndef DEBUG_MODE == 1
 	CCLOG("ComputerTurn count1 : %d", count1);
 #endif
 }

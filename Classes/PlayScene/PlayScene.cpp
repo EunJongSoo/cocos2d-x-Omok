@@ -118,7 +118,7 @@ void CPlayScene::runActionComputer() {
 	catch (GameState e) {
 		if (e == GameState::black_win || e == GameState::white_win)
 			endGame(e);
-#ifdef DEBUG_MODE == 1
+#ifndef DEBUG_MODE == 1
 		else if (e == GameState::error) {
 			CCLOG("************ Computer Fail");
 #endif
@@ -144,6 +144,7 @@ void CPlayScene::saveData() const {
 }
 
 void CPlayScene::endGame(const GameState &s) {
+	stone_layer->stopAllActionVector();
 	pause_check = true;
 	game_start_check = false;
 	this->unscheduleGameUpdate();
