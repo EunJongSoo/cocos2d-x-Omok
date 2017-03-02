@@ -28,6 +28,18 @@
     <Filter Include="src\rapidjson\msinttypes">
       <UniqueIdentifier>{99b60a6a-c952-4f6e-a97a-1df885fa6c1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\PlayScene\UILayer">
+      <UniqueIdentifier>{6643e200-c9bf-4093-816f-00609cd55fd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\PlayScene\TimeLayer">
+      <UniqueIdentifier>{b6dfb9e8-cb2d-49f3-b2c1-fb9e9929ec35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\PlayScene\StoneLayer">
+      <UniqueIdentifier>{0441304e-381c-43ab-8a8f-f3a9a762c71c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\PlayScene\StoneSprite">
+      <UniqueIdentifier>{e560f068-d0e9-49bc-95f8-ab291026763e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,23 +51,26 @@
     <ClCompile Include="..\Classes\PlayScene\PlayScene.cpp">
       <Filter>src\PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\PlayScene\StoneLayer.cpp">
-      <Filter>src\PlayScene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\PlayScene\StoneSprite.cpp">
-      <Filter>src\PlayScene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\PlayScene\TimerLayer.cpp">
-      <Filter>src\PlayScene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\PlayScene\UILayer.cpp">
-      <Filter>src\PlayScene</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\PlayScene\Computer.cpp">
       <Filter>src\PlayScene</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\MenuScene\MenuScene.cpp">
       <Filter>src\MenuScene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GossiniDanceSprite.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PlayScene\UILayer.cpp">
+      <Filter>src\PlayScene\UILayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PlayScene\TimerLayer.cpp">
+      <Filter>src\PlayScene\TimeLayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PlayScene\StoneLayer.cpp">
+      <Filter>src\PlayScene\StoneLayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\PlayScene\StoneSprite.cpp">
+      <Filter>src\PlayScene\StoneSprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,18 +196,6 @@
     <ClInclude Include="..\Classes\PlayScene\PlayScene.h">
       <Filter>src\PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\PlayScene\StoneLayer.h">
-      <Filter>src\PlayScene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\PlayScene\StoneSprite.h">
-      <Filter>src\PlayScene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\PlayScene\TimerLayer.h">
-      <Filter>src\PlayScene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\PlayScene\UILayer.h">
-      <Filter>src\PlayScene</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\PlayScene\Computer.h">
       <Filter>src\PlayScene</Filter>
     </ClInclude>
@@ -201,6 +204,21 @@
     </ClInclude>
     <ClInclude Include="..\Classes\PlayScene\DataManager.h">
       <Filter>src\PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GossiniDanceSprite.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PlayScene\UILayer.h">
+      <Filter>src\PlayScene\UILayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PlayScene\TimerLayer.h">
+      <Filter>src\PlayScene\TimeLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PlayScene\StoneLayer.h">
+      <Filter>src\PlayScene\StoneLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\PlayScene\StoneSprite.h">
+      <Filter>src\PlayScene\StoneSprite</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

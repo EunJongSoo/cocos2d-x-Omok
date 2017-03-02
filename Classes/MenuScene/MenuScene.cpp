@@ -1,12 +1,13 @@
 #include "MenuScene.h"
 #include "PlayScene\PlayScene.h"
+#include "GossiniDanceSprite.h"
 
 using namespace cocos2d;
 using namespace ui;
 
 Scene* CMenuScene::createScene() {
 	Scene* scene = Scene::create();
-	Layer* layer = CMenuScene::create();
+	CMenuScene* layer = CMenuScene::create();
 	scene->addChild(layer);
 	return scene;
 }
@@ -25,9 +26,16 @@ bool CMenuScene::init() {
 	// 버튼을 눌렀을때의 이벤트를 추가한다.
 	start_button->addTouchEventListener(CC_CALLBACK_2(CMenuScene::onTouch, this));
 
+	Size winsize = CCDirector::getInstance()->getWinSize();
+
+	for (int i = 1; i < 5; ++i) {
+		CGossiniDanceSprite* sprite = CGossiniDanceSprite::create();
+		sprite->setPosition(winsize.width / 5 * i, winsize.height / 5 * 4);
+		this->addChild(sprite);
+		sprite->runActionAnimation(CGossiniDanceSprite::GossiniDanceState::front_dance);
+	}
 	return true;
 }
-
 
 // 이벤트별 행동을 정의해준다.
 void CMenuScene::onTouch(Ref* sender, Widget::TouchEventType type) {

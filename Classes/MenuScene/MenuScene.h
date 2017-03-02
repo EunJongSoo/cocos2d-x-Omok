@@ -16,7 +16,6 @@ public:
 private:
 	void onTouch(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
 	void replaceScene();
-
 };
 
 #endif

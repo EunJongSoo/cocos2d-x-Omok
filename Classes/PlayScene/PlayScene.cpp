@@ -83,7 +83,8 @@ float CPlayScene::createBoard() {
 
 void CPlayScene::runActionGameUpdate() {
 	game_start_check = true;
-	this->schedule(schedule_selector(CPlayScene::gameUpdate), 1.0f);
+	ui_layer->runActionDanceAnimation();
+	this->schedule(schedule_selector(CPlayScene::gameUpdate), 1.5f);
 }
 
 void CPlayScene::unscheduleGameUpdate() {
@@ -121,13 +122,14 @@ void CPlayScene::runActionComputer() {
 #ifndef DEBUG_MODE == 1
 		else if (e == GameState::error) {
 			CCLOG("************ Computer Fail");
-#endif
 		}
+#endif
 	}
 }
 
 void CPlayScene::gameUpdate(const float dt) {
 	if (!pause_check && now_turn == computer_stone_color && game_start_check) {
+		ui_layer->changeDanceAnimation();
 		runActionComputer();	// 컴퓨터 턴
 		timer_layer->resetTimer();
 	}
@@ -165,6 +167,7 @@ void CPlayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event) {
 			// 착수 성공하면 유저의 반대색으로 턴을 바꿈
 			now_turn = oppositionColor(player_stone_color);
 			timer_layer->resetTimer();
+			ui_layer->changeDanceAnimation();
 		}
 	}
 	catch (GameState e) {

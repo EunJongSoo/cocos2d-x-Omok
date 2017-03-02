@@ -22,8 +22,12 @@ public:
 	void setRunActionrCountDownFunc(std::function<void(void)> countdown);
 	void setRunActionrRestartFunc(std::function<void(void)> restart);
 
+	void runActionDanceAnimation();
+	void changeDanceAnimation();
+
 private:
 	void createUI();
+	void createCharacter();
 	void createOptionMenu();
 	void createSoundMenu();
 	void visibleOptionMenu();

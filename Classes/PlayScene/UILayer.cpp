@@ -1,5 +1,6 @@
 #include "UILayer.h"
 #include "SimpleAudioEngine.h"
+#include "GossiniDanceSprite.h"
 
 using namespace cocos2d;
 using namespace ui;
@@ -23,6 +24,7 @@ bool CUILayer::init() {
 	if (!Layer::init())
 		return false;
 	this->createUI();
+	this->createCharacter();
 	return true;
 }
 
@@ -102,6 +104,37 @@ void CUILayer::createUI() {
 
 	createOptionMenu();
 	createSoundMenu();
+}
+
+void CUILayer::createCharacter() {
+	Size winsize = CCDirector::getInstance()->getWinSize();
+	int j = 0;
+	for (int i = 0; i < 2; ++i) {
+		j = i == 0 ? 1 : 9;
+		CGossiniDanceSprite* sprite = CGossiniDanceSprite::create();
+		sprite->setPosition(winsize.width / 10 * j, winsize.height / 10 * 7);
+		char str[16];
+		sprintf_s(str, sizeof(str), "character%d", i);
+		this->addChild(sprite, 5, str);
+	}
+}
+
+void CUILayer::runActionDanceAnimation() {
+	for (int i = 0; i < 2; ++i) {
+		char str[16];
+		sprintf_s(str, sizeof(str), "character%d", i);
+		CGossiniDanceSprite* sprite = (CGossiniDanceSprite*)this->getChildByName(str);
+		sprite->runActionAnimation((CGossiniDanceSprite::GossiniDanceState)i);
+	}
+}
+
+void CUILayer::changeDanceAnimation() {
+	for (int i = 0; i < 2; ++i) {
+		char str[16];
+		sprintf_s(str, sizeof(str), "character%d", i);
+		CGossiniDanceSprite* sprite = (CGossiniDanceSprite*)this->getChildByName(str);
+		sprite->changeDanceAnimation();
+	}
 }
 
 void CUILayer::createOptionMenu() {
