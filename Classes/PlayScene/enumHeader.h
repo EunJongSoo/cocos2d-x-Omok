@@ -6,7 +6,7 @@ enum GameState {
 };
 
 enum Stone { 
-	black, white, emptied,
+	black, white, emptied, block,
 };
 
 #endif

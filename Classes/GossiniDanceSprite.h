@@ -15,6 +15,7 @@ public:
 	virtual bool init();
 	CREATE_FUNC(CGossiniDanceSprite);
 
+	void idleAnimation();
 	void runActionAnimation(const GossiniDanceState state);
 	void changeDanceAnimation();
 

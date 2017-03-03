@@ -21,7 +21,7 @@ bool CPlayScene::init() {
 
 	// 화면 전환 효과
 	LayerColor* layer = LayerColor::create(Color4B(0, 0, 0, 0));
-	this->addChild(layer, 10);
+	this->addChild(layer, PlaySceneLocalZ::fadelayer_localz);
 	FadeOut* fadeout = FadeOut::create(0.5f);
 	layer->runAction(fadeout);
 
@@ -33,24 +33,27 @@ bool CPlayScene::init() {
 	listener->onTouchEnded = CC_CALLBACK_2(CPlayScene::onTouchEnded, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 	
+
+	createBackGround();
+	
 	float scale = createBoard();
 	Size size = this->getChildByName("base")->getContentSize();
-	// 레이어 추가
+
 	stone_layer = CStoneLayer::create();
 	stone_layer->calculationBoardSize(size, scale);
-	this->addChild(stone_layer, 2);
+	this->addChild(stone_layer, PlaySceneLocalZ::stone_layer_localz);
 	
 	timer_layer = CTimerLayer::create();
 	timer_layer->setRunActionrFuncs(std::bind(&CPlayScene::runActionGameUpdate, this),
 									std::bind(&CPlayScene::runActionTimeOver, this));
 	timer_layer->setPauseCheck(&pause_check);
-	this->addChild(timer_layer, 3);
-	// UI는 가장 위에 보인다.
+	this->addChild(timer_layer, PlaySceneLocalZ::time_layer_localz);
+
 	ui_layer = CUILayer::create();
 	ui_layer->setRunActionrCountDownFunc(std::bind(&CPlayScene::runActionCountDown, this));
 	ui_layer->setRunActionrRestartFunc(std::bind(&CPlayScene::runActionRestart, this));
 	ui_layer->setPauseCheck(&pause_check);
-	this->addChild(ui_layer, 4);
+	this->addChild(ui_layer, PlaySceneLocalZ::ui_layer_localz);
 
 	data_manager = new CDataManager();
 	Document d = data_manager->loadData();
@@ -65,6 +68,14 @@ bool CPlayScene::init() {
 	return true;
 }
 
+void CPlayScene::createBackGround() {
+	Size winsize = CCDirector::getInstance()->getWinSize();
+	Sprite* back_ground = Sprite::create("etc/bg_1.jpg");
+	back_ground->setPosition(winsize / 2);
+	back_ground->setAnchorPoint(Vec2(0.5f, 0.5f));
+	this->addChild(back_ground, PlaySceneLocalZ::back_ground_localz);
+}
+
 float CPlayScene::createBoard() {
 	Sprite* base_sprite = Sprite::create("etc/Base.jpg");
 	Size winsize = Director::getInstance()->getWinSize();
@@ -77,7 +88,7 @@ float CPlayScene::createBoard() {
 	base_sprite->setAnchorPoint(Vec2(0.5, 0.5));
 	base_sprite->setScale(scale);
 	base_sprite->setPosition(winsize / 2);
-	this->addChild(base_sprite, 1, "base");
+	this->addChild(base_sprite, PlaySceneLocalZ::board_localz, "base");
 	return scale;
 }
 

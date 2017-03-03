@@ -23,15 +23,13 @@ void CUILayer::setRunActionrRestartFunc(std::function<void(void)> restart) {
 bool CUILayer::init() {
 	if (!Layer::init())
 		return false;
+	this->createTitle();
 	this->createUI();
 	this->createCharacter();
 	return true;
 }
 
 void CUILayer::initUILayer() {
-	//restart_check = false;
-	//selete_color_check = false;
-
 	Button* bt1 = (Button*)this->getChildByName("black");
 	Button* bt2 = (Button*)this->getChildByName("white");
 	Button* bt3 = (Button*)this->getChildByName("selete");
@@ -49,6 +47,13 @@ void CUILayer::initUILayer() {
 	menu->setVisible(false);
 	soundmenu->setVisible(false);
 	label->setVisible(false);
+	for (int i = 0; i < 3; ++i) {
+		char str[16];
+		sprintf_s(str, sizeof(str), "title_%d", i);
+		Label* label = (Label*)this->getChildByName(str);
+		label->setVisible(true);
+	}
+	this->idleAnimation();
 }
 
 void CUILayer::createGaemResult(const GameState s) {
@@ -68,24 +73,49 @@ void CUILayer::createGaemResult(const GameState s) {
 	bt4->setEnabled(false);
 }
 
+void CUILayer::createTitle() {
+	Size winsize = CCDirector::getInstance()->getWinSize();
+	float x = winsize.width / 10;
+	float y = winsize.height / 10;
+
+	Label* title_0 = Label::create("Selete Color", "font/Marker Felt.ttf", 70);
+	title_0->setPosition(winsize.width / 2, y * 8);
+	title_0->setColor(Color3B(255, 255, 255));
+	this->addChild(title_0, UISceneLocalZ::title_localz, "title_0");
+
+	Label* title_1 = Label::create("Black", "font/Marker Felt.ttf", 50);
+	title_1->setPosition(x * 4, y * 7);
+	title_1->setColor(Color3B(0, 0, 0));
+	this->addChild(title_1, UISceneLocalZ::title_localz, "title_1");
+
+	Label* title_2 = Label::create("White", "font/Marker Felt.ttf", 50);
+	title_2->setPosition(x * 6, y * 7);
+	title_2->setColor(Color3B(255, 255, 255));
+	this->addChild(title_2, UISceneLocalZ::title_localz, "title_2");
+}
+
 void CUILayer::createUI() {
+	Size winsize = CCDirector::getInstance()->getWinSize();
+	float x = winsize.width / 10;
+	float y = winsize.height / 10;
+
 	cocos2d::ui::Button* bt1 = ui::Button::create("Button/grey_panel.png","Button/yellow_panel.png","etc/Black.png");
-	bt1->setPosition(Vec2(400, 400));
+	bt1->setPosition(Vec2(x * 4, y * 5));
 	bt1->addTouchEventListener(CC_CALLBACK_2(CUILayer::onTouchBlackSeleteButton, this));
 	bt1->setAnchorPoint(Vec2(0.5f, 0.5f));
-	this->addChild(bt1, 1, "black");
+	this->addChild(bt1, UISceneLocalZ::button_localz, "black");
 
 	Button* bt2 = Button::create("Button/grey_panel.png", "Button/yellow_panel.png", "etc/White.png");
-	bt2->setPosition(Vec2(550, 400));
+	bt2->setPosition(Vec2(x * 6, y * 5));
 	bt2->addTouchEventListener(CC_CALLBACK_2(CUILayer::onTouchWhiteSeleteButton, this));
 	bt2->setAnchorPoint(Vec2(0.5f, 0.5f));
-	this->addChild(bt2, 1, "white");
+	this->addChild(bt2, UISceneLocalZ::button_localz, "white");
 	
 	Button* bt3 = Button::create("Button/grey_panel.png", "Button/yellow_panel.png");
-	bt3->setPosition(Vec2(475, 250));
+	bt3->setPosition(Vec2(x * 5, y * 3));
 	bt3->addTouchEventListener(CC_CALLBACK_2(CUILayer::onTouchColorCheckButton, this));
 	bt3->setAnchorPoint(Vec2(0.5f, 0.5f));
-	this->addChild(bt3, 1, "selete");
+	this->addChild(bt3, UISceneLocalZ::button_localz, "selete");
 
 	Size winSize = CCDirector::getInstance()->getWinSize();
 
@@ -93,14 +123,14 @@ void CUILayer::createUI() {
 	optionbt->setPosition(Vec2(winSize.width / 1.1f, winSize.height / 1.1f));
 	optionbt->addTouchEventListener(CC_CALLBACK_2(CUILayer::onTouchOptionMenuButton, this));
 	optionbt->setVisible(false);
-	this->addChild(optionbt, 1, "option");
+	this->addChild(optionbt, UISceneLocalZ::button_localz, "option");
 
 	Label* label = Label::create();
 	label->setPosition(500, 500);
 	label->setSystemFontSize(50);
 	label->setColor(Color3B(255, 255, 255));
 	label->setVisible(false);
-	this->addChild(label, 5, "resultstr");
+	this->addChild(label, UISceneLocalZ::resultstr_localz, "resultstr");
 
 	createOptionMenu();
 	createSoundMenu();
@@ -115,7 +145,16 @@ void CUILayer::createCharacter() {
 		sprite->setPosition(winsize.width / 10 * j, winsize.height / 10 * 7);
 		char str[16];
 		sprintf_s(str, sizeof(str), "character%d", i);
-		this->addChild(sprite, 5, str);
+		this->addChild(sprite, UISceneLocalZ::animation_localz, str);
+	}
+}
+
+void CUILayer::idleAnimation() {
+	for (int i = 0; i < 2; ++i) {
+		char str[16];
+		sprintf_s(str, sizeof(str), "character%d", i);
+		CGossiniDanceSprite* sprite = (CGossiniDanceSprite*)this->getChildByName(str);
+		sprite->idleAnimation();
 	}
 }
 
@@ -152,7 +191,7 @@ void CUILayer::createOptionMenu() {
 	Menu* menu = Menu::create(itemlabel1, itemlabel2, itemlabel3, NULL);
 	menu->alignItemsVertically();
 	menu->setVisible(false);
-	this->addChild(menu, 4, "menu");
+	this->addChild(menu, UISceneLocalZ::optionmenu_localz, "menu");
 }
 
 void CUILayer::createSoundMenu() {
@@ -172,7 +211,7 @@ void CUILayer::createSoundMenu() {
 	Menu* soundmenu = Menu::create(toggle1, toggle2, itemimg3, NULL);
 	soundmenu->alignItemsVertically();
 	soundmenu->setVisible(false);
-	this->addChild(soundmenu, 5, "soundmenu");
+	this->addChild(soundmenu, UISceneLocalZ::soundmenu_localz, "soundmenu");
 }
 
 void CUILayer::visibleOptionMenu() {
@@ -237,6 +276,12 @@ void CUILayer::onTouchColorCheckButton(Ref* sender, Widget::TouchEventType type)
 			bt3->setVisible(false);
 			Button* bt4 = (Button*)this->getChildByName("option");
 			bt4->setVisible(true);
+			for (int i = 0; i < 3; ++i) {
+				char str[16];
+				sprintf_s(str, sizeof(str), "title_%d", i);
+				Label* label = (Label*)this->getChildByName(str);
+				label->setVisible(false);
+			}
 			RunActionrCountDown();
 		}
 	}

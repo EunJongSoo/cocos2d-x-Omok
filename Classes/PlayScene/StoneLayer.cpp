@@ -107,7 +107,8 @@ void CStoneLayer::createStone(const Vec2 &pos, const Stone s) {
 	CStoneSprite* pSprite = getSprite(pos.x, pos.y);
 
 	// 불러온 돌의 종류를 확인해서 돌이 있으면 착수 실패
-	if (pSprite->getStoneType() != Stone::emptied) {
+	CCLOG("createStone");
+	if (pSprite->getStoneType() != Stone::emptied && pSprite->getStoneType() !=Stone::block) {
 		throw GameState::error;
 	}
 	// 바둑돌 이미지를 변경해준다.
@@ -125,18 +126,23 @@ void CStoneLayer::createStone(const Vec2 &pos, const Stone s) {
 	// 3~4개의 돌은 깜박이게 한다.
 	BlinkingStoneSprite();
 	// 주변 2칸을 활성화 시킨다.
-	activeAroundStone(pos);
+	activeAroundStone(pos, s);
 #ifndef DEBUG_MODE == 1
 	computer->calculationScore(this);
 #endif
 }
 
-void CStoneLayer::activeAroundStone(const Vec2 &pos) {
+void CStoneLayer::activeAroundStone(const Vec2 &pos, Stone s) {
 	for (int dir = 0; dir < Direction::dir_count; ++dir) {
 		for (int depth = 1; depth <= 2; ++depth) {
 			CStoneSprite* sprite = searchAroundSprite(pos.x, pos.y, dir, depth);
-			if (sprite != nullptr && sprite->getStoneType() == Stone::emptied)
+			if (sprite->getStoneType() == Stone::emptied) {
 				sprite->setActive(true);
+			}
+			else if (sprite->getStoneType() != Stone::emptied
+				&& sprite->getStoneType() != s && sprite->getStoneType() != Stone::block && depth == 1) {
+				sprite->runActionRotateSprite();
+			}
 		}
 	}
 }
@@ -163,7 +169,8 @@ CStoneSprite* CStoneLayer::searchAroundSprite(const float x, const float y, cons
 	int tx = ix * depth + x;
 	int ty = iy * depth + y;
 	// 좌표 값이 0보다 작거나 바둑판 보다 크면 검사하지 않는다.
-	if (tx < 0 || tx > board_size_x || ty < 0 || ty > board_size_y) return nullptr;
+	if (tx < 0 || tx >= board_size_x || ty < 0 || ty >= board_size_y)
+		return CStoneSprite::create(Stone::block);
 
 	return this->getSprite(tx, ty);
 }
@@ -207,11 +214,13 @@ void CStoneLayer::checkStone(const int x, const int y, const Direction dir) {
 		up, down, right, left, upper_left, lower_right, lower_left, upper_right, dir_count	};*/
 		++check_count;
 		if (check_count > 2 && check_count < 6) {
-			tmp_color[1] = searchAroundSprite(x, y, dir, 1)->getStoneType();
+			sprite = searchAroundSprite(x, y, dir, 1);
+			tmp_color[1] = sprite->getStoneType();
 			// 이번 돌과 다음 돌이 달라야한다.
 			// 세번째 돌과 네번째 돌, 네번째 다섯번째 돌
 			if (tmp_color[0] != tmp_color[1]) {
-				tmp_color[2] = searchAroundSprite(x, y, dir + 1, check_count)->getStoneType();
+				sprite = searchAroundSprite(x, y, dir + 1, check_count);
+				tmp_color[2] = sprite->getStoneType();
 				// 돌의 앞 뒤가 막히지 않아야 한다.
 				if (tmp_color[1] == Stone::emptied || tmp_color[2] == Stone::emptied) {
 					addVector(x, y, check_count + 2, dir);
@@ -236,6 +245,7 @@ void CStoneLayer::addVector(const int x, const int y, const int count, const Dir
 	my_struct->sprite[0] = searchAroundSprite(x, y, dir, 1);
 	for (int i = 0; i < count-1; ++i) {
 		sprite = searchAroundSprite(x, y, dir + 1, i);
+		if (sprite == nullptr)	break;
 		my_struct->sprite[i+1] = sprite;
 		my_struct->sum_pos += sprite->getPos();
 	}
@@ -271,10 +281,12 @@ void CStoneLayer::BlinkingStoneSprite() {
 	for (int j = 0; j < forsize; ++j) {
 		size = my_struct_vector.at(i)->size;
 		// 첫번째 돌과 마지막 돌이 하나는 비어있을 것
+		CCLOG("BlinkingStoneSprite1");
 		if (my_struct_vector.at(i)->sprite[0]->getStoneType() == Stone::emptied ||
 			my_struct_vector.at(i)->sprite[size - 1]->getStoneType() == Stone::emptied) {
 			size = my_struct_vector.at(i)->size;
 			if (size == 5 || size == 6) {
+				CCLOG("BlinkingStoneSprite2");
 				if (my_struct_vector.at(i)->sprite[1]->getStoneType()
 					== my_struct_vector.at(i)->sprite[0]->getStoneType()
 					|| my_struct_vector.at(i)->sprite[1]->getStoneType()

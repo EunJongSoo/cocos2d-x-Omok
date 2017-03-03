@@ -45,6 +45,12 @@ bool CGossiniDanceSprite::init()
 	return true;
 }
 
+void CGossiniDanceSprite::idleAnimation() {
+	dance_state = GossiniDanceState::idle;
+	this->stopAllActions();
+	this->initWithTexture(idle_texture);
+}
+
 void CGossiniDanceSprite::runActionAnimation(const GossiniDanceState state) {
 	dance_state = state;
 	this->stopAllActions();

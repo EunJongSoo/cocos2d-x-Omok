@@ -9,12 +9,16 @@ public:
 	CStoneSprite();
 	virtual ~CStoneSprite();
 	virtual bool init();
+	virtual bool init(const Stone s);
+	static CStoneSprite* create(const Stone s);
 	CREATE_FUNC(CStoneSprite);
-	
+
 	bool CStoneSprite::initSprite(const float scale, const Stone s);
 
+	void runActionRotateSprite();
 	void runActionBlinkingSprite();
 	void stopBlinkingSprite();
+	void falseRotateCheck();
 	int getScore() const;
 	void setScore(const int s);
 	int getPos() const;
@@ -27,6 +31,10 @@ public:
 private:
 	int score;
 	bool active;
+	bool rotate;
+	bool blinking;
 	Stone stone;
+
+	cocos2d::RepeatForever* blinking_sprite;
 };
 #endif

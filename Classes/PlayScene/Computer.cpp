@@ -82,13 +82,13 @@ void CComputer::calculationScore(Node* node) {
 
 int CComputer::calculationPointMaxScore(CStoneLayer* stone_layer, int x, int y) {
 	CStoneSprite* sprite;
-	int max_score[2] = { 0, };
+	int max_score[3] = { 0, };
 	int score[2] = { 0, };
 	Stone previous_color[4] = { Stone::emptied, };
 	for (int dir = 0; dir < CStoneLayer::Direction::dir_count; ++dir) {
 		for (int depth = 1; depth <= 4; ++depth) {
 			sprite = stone_layer->searchAroundSprite(x, y, dir, depth);
-			if (sprite == nullptr) break;
+			if (sprite->getStoneType() == Stone::block) break;
 			Stone color = sprite->getStoneType();
 			previous_color[depth - 1] = color;
 

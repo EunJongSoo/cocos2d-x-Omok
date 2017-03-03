@@ -26,12 +26,22 @@ public:
 	void changeDanceAnimation();
 
 private:
+	enum UISceneLocalZ {
+		button_localz, 
+		title_localz,
+		animation_localz, 
+		optionmenu_localz, 
+		soundmenu_localz, 
+		resultstr_localz
+	};
+	void createTitle();
 	void createUI();
 	void createCharacter();
 	void createOptionMenu();
 	void createSoundMenu();
 	void visibleOptionMenu();
 	void visibleSoundMenu();
+	void idleAnimation();
 	void enabledColorSeleteButton(const Stone color);
 	void onTouchBlackSeleteButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
 	void onTouchWhiteSeleteButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);

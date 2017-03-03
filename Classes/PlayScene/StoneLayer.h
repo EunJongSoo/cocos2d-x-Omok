@@ -54,7 +54,7 @@ private:
 	void checkHeight();
 	void checkSlash();
 	void checkBackSlash();
-	void activeAroundStone(const cocos2d::Vec2 &pos);
+	void activeAroundStone(const cocos2d::Vec2 &pos, Stone s);
 
 	void addVector(const int x, const int y, const int count, const Direction dir);
 	void overlapCheckVector(MyStruct* mystr);

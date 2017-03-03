@@ -17,6 +17,12 @@ public:
 	CREATE_FUNC(CPlayScene);
 
 private:
+	enum PlaySceneLocalZ{
+		back_ground_localz, board_localz, stone_layer_localz, 
+		time_layer_localz, ui_layer_localz, fadelayer_localz
+	};
+
+	void createBackGround();
 	float createBoard();
 	void runActionGameUpdate();
 	void unscheduleGameUpdate();

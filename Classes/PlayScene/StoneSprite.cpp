@@ -1,12 +1,45 @@
 #include "StoneSprite.h"
 
-CStoneSprite::CStoneSprite() : stone(Stone::emptied), score(0), active(false) {}
-CStoneSprite::~CStoneSprite() {}
+CStoneSprite::CStoneSprite() : stone(Stone::emptied), score(0), active(false), rotate(false), blinking(false){}
+CStoneSprite::~CStoneSprite() {
+	blinking_sprite->release();
+	this->release();
+}
 
 using namespace cocos2d;
 
+CStoneSprite* CStoneSprite::create(const Stone s) {
+	CStoneSprite* tmp = new CStoneSprite();
+	if (tmp && tmp->init(s))
+	{
+		tmp->autorelease();
+		return tmp;
+	}
+	else
+	{
+		if (tmp != nullptr) delete tmp;
+		tmp = nullptr;
+		return tmp;
+	}
+	return tmp;
+}
+
+bool CStoneSprite::init(const Stone s) {
+	if (!Sprite::init()) return false;
+	stone = Stone::block;
+	this->retain();
+	return true;
+}
+
 bool CStoneSprite::init() {
 	if (!Sprite::init()) return false;
+	this->retain();
+	FadeIn* fade_in = FadeIn::create(0.3f);
+	FadeOut* fade_out = FadeOut::create(0.3f);
+	Sequence* seq = Sequence::create(fade_in, fade_out, NULL);
+	blinking_sprite = RepeatForever::create(seq);
+	blinking_sprite->retain();
+	blinking_sprite->setTag(1);
 	return true;
 }
 
@@ -32,16 +65,34 @@ bool CStoneSprite::initSprite(const float scale, const Stone s) {
 	return false;
 }
 
+void CStoneSprite::runActionRotateSprite() {
+	if (!rotate) {
+		rotate = true;
+		RotateBy* rotate = RotateBy::create(0.4f, Vec3(360, 360, 360));
+		ScaleBy* scaleby = ScaleBy::create(0.2f, 1.2f);
+		MoveBy* moveby = MoveBy::create(0.2f, Vec3(0.0f, 20.0f, 0.0f));
+		CallFunc* call = CallFunc::create(CC_CALLBACK_0(CStoneSprite::falseRotateCheck, this));
+		Sequence* seq1 = Sequence::create(scaleby, scaleby->reverse(), NULL);
+		Sequence* seq2 = Sequence::create(moveby, moveby->reverse(), call, NULL);
+		Spawn* spawn = Spawn::create(seq1, seq2, rotate, NULL);
+		this->runAction(spawn);
+	}
+}
+
+void CStoneSprite::falseRotateCheck() {
+	rotate = false;
+}
+
 void CStoneSprite::runActionBlinkingSprite(){
-	FadeIn* fade_in = FadeIn::create(0.3f);
-	FadeOut* fade_out = FadeOut::create(0.3f);
-	Sequence* seq = Sequence::create(fade_in, fade_out, NULL);
-	RepeatForever* repeat_forever = RepeatForever::create(seq);
-	this->runAction(repeat_forever);
+	if (!blinking) {
+		blinking = true;
+		this->runAction(blinking_sprite);
+	}
 }
 
 void CStoneSprite::stopBlinkingSprite() {
-	this->stopAllActions();
+	blinking = false;
+	this->stopActionByTag(1);
 	FadeIn* fade_in = FadeIn::create(0.1f);
 	this->runAction(fade_in);
 }
@@ -79,26 +130,3 @@ Stone CStoneSprite::getStoneType() const {
 //	return iy;
 //}
 
-//CStoneSprite* CStoneSprite::create(const int x, const int y) {
-//	CStoneSprite* tmp = new CStoneSprite();
-//	if (tmp && tmp->init(x, y))
-//	{
-//		tmp->autorelease();
-//		return tmp;
-//	}
-//	else
-//	{
-//		if (tmp != nullptr) delete tmp;
-//		tmp = nullptr;
-//		return tmp;
-//	}
-//	return tmp;
-//}
-//
-//bool CStoneSprite::init(const int x, const int y) {
-//	if (!Sprite::init()) return false;
-//	// 최초 바둑돌 위치 생성시 좌표값 입력
-//	ix = x;
-//	iy = y;
-//	return true;
-//}
