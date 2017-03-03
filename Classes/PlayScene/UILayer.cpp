@@ -138,18 +138,16 @@ void CUILayer::changeDanceAnimation() {
 }
 
 void CUILayer::createOptionMenu() {
-	Label* label1 = Label::create();
-	label1->setString("restart");
-	label1->setSystemFontSize(50);
-	label1->setColor(Color3B(255, 100, 100));
-	Label* label2 = Label::create("sound", "", 50);
-	label2->setColor(Color3B(100, 255, 100));
-	Label* label3 = Label::create("gameoff", "", 50);
+	Label* label1 = Label::create("restart", "font/Marker Felt.ttf", 30);
+	label1->setColor(Color3B(0, 0, 0));
+	Label* label2 = Label::create("sound", "font/Marker Felt.ttf", 30);
+	label2->setColor(Color3B(0, 0, 0));
+	Label* label3 = Label::create("exit", "font/Marker Felt.ttf", 30);
 	label3->setColor(Color3B(0, 0, 0));
 
 	MenuItemLabel* itemlabel1 = MenuItemLabel::create(label1, CC_CALLBACK_1(CUILayer::onTouchRestartGameButton, this));
 	auto itemlabel2 = MenuItemLabel::create(label2, CC_CALLBACK_1(CUILayer::onTouchSoundMenuButton, this));
-	auto itemlabel3 = MenuItemLabel::create(label3, CC_CALLBACK_1(CUILayer::onTouchQuitButton, this));
+	auto itemlabel3 = MenuItemLabel::create(label3, CC_CALLBACK_1(CUILayer::onTouchExitButton, this));
 
 	Menu* menu = Menu::create(itemlabel1, itemlabel2, itemlabel3, NULL);
 	menu->alignItemsVertically();
@@ -172,7 +170,7 @@ void CUILayer::createSoundMenu() {
 		CC_CALLBACK_1(CUILayer::onTouchSoundMenuBackButton, this));
 
 	Menu* soundmenu = Menu::create(toggle1, toggle2, itemimg3, NULL);
-	soundmenu->alignItemsHorizontally();
+	soundmenu->alignItemsVertically();
 	soundmenu->setVisible(false);
 	this->addChild(soundmenu, 5, "soundmenu");
 }
@@ -259,7 +257,7 @@ void CUILayer::onTouchSoundMenuButton(Ref* sender) {
 	visibleSoundMenu();
 }
 
-void CUILayer::onTouchQuitButton(Ref* sender) {
+void CUILayer::onTouchExitButton(Ref* sender) {
 	CCDirector::getInstance()->end();
 }
 

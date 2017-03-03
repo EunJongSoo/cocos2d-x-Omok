@@ -15,46 +15,79 @@ Scene* CMenuScene::createScene() {
 bool CMenuScene::init() {
 	if (!Layer::init())
 		return false;
-	// cocos studio에서 작업한 버튼을 불러온다.
-	auto rootNode = CSLoader::createNode("MenuLayer.csb");
-	// MenuScene Layer에 추가시킨다.
-	addChild(rootNode, 0, 0);
+	
+	createBackGround();
+	createMenu();
+	createTitle();
 
-	// Node에서 STARTBUTTON을 찾아서 변수에 저장한다.
-	Button* start_button = (Button*)rootNode->getChildByName("STARTBUTTON");
-	Button* exit_button = (Button*)rootNode->getChildByName("STARTBUTTON");
-	// 버튼을 눌렀을때의 이벤트를 추가한다.
-	start_button->addTouchEventListener(CC_CALLBACK_2(CMenuScene::onTouch, this));
-
-	Size winsize = CCDirector::getInstance()->getWinSize();
-
-	for (int i = 1; i < 5; ++i) {
-		CGossiniDanceSprite* sprite = CGossiniDanceSprite::create();
-		sprite->setPosition(winsize.width / 5 * i, winsize.height / 5 * 4);
-		this->addChild(sprite);
-		sprite->runActionAnimation(CGossiniDanceSprite::GossiniDanceState::front_dance);
-	}
 	return true;
 }
 
-// 이벤트별 행동을 정의해준다.
-void CMenuScene::onTouch(Ref* sender, Widget::TouchEventType type) {
-	switch (type) {
-	case Widget::TouchEventType::BEGAN:
-		CCLOG("BEGAN");
-		break;
-	case Widget::TouchEventType::MOVED:
-		CCLOG("MOVED");
-		break;
-	case Widget::TouchEventType::ENDED:
-		CCLOG("ENDED");
-		CallFunc* call = CallFunc::create(CC_CALLBACK_0(CMenuScene::replaceScene, this));
-		FadeOut* fadeout = FadeOut::create(0.5f);
-		Sequence* seq = Sequence::create(fadeout, call, NULL);
-		Node* node = this->getChildByTag(0);
-		node->runAction(seq);
-		break;
+void CMenuScene::createBackGround() {
+	Size winsize = CCDirector::getInstance()->getWinSize();
+	Sprite* back_ground = Sprite::create("etc/bg_1.jpg");
+	back_ground->setPosition(winsize / 2);
+	back_ground->setAnchorPoint(Vec2(0.5f, 0.5f));
+	this->addChild(back_ground, 1);
+	for (int i = 1; i < 5; ++i) {
+		CGossiniDanceSprite* sprite = CGossiniDanceSprite::create();
+		sprite->setPosition(winsize.width / 5 * i, winsize.height / 5 * 4);
+		this->addChild(sprite, 2);
+		sprite->runActionAnimation(CGossiniDanceSprite::GossiniDanceState::front_dance);
 	}
+}
+
+void CMenuScene::createTitle() {
+	Size winsize = CCDirector::getInstance()->getWinSize();
+	float x = winsize.width / 5;
+	float y = winsize.height / 5;
+
+	Label* single = Label::create("Single", "font/Marker Felt.ttf", 50);
+	single->setScale(0.1f);
+	single->setPosition(Vec2(-100, winsize.height / 5 * 2));
+	this->addChild(single, 2);
+	MoveTo* moveto = MoveTo::create(0.8f, Vec2(x * 2, y * 3));
+	ScaleTo* scaleto1 = ScaleTo::create(0.8f, 1.0f);
+	RotateTo* rotateto = RotateTo::create(0.8f, 360 * 3);
+	Spawn* spawn1 = Spawn::create(moveto, scaleto1, rotateto, NULL);
+	ScaleTo* scaleto2 = ScaleTo::create(0.1, 1.5f);
+	Sequence* sequence = Sequence::create(spawn1, scaleto2, NULL);
+	single->runAction(sequence);
+
+	Label* omok = Label::create("Omok", "font/Marker Felt.ttf", 50);
+	omok->setPosition(Vec2(x * 3, y * 3));
+	omok->setScale(0.1f);
+	omok->setOpacity(0);
+	this->addChild(omok, 2);
+	FadeIn* fadein = FadeIn::create(1.0);
+	Spawn* spawn2 = Spawn::create(scaleto2, fadein, NULL);
+	omok->runAction(spawn2);
+}
+
+void CMenuScene::createMenu() {
+	Size winsize = CCDirector::getInstance()->getWinSize();
+
+	Label* item_label_1 = Label::create("PlayGame", "font/Marker Felt.ttf", 50);
+	Label* item_label_2 = Label::create("Exit", "font/Marker Felt.ttf", 50);
+	MenuItemLabel* item_1 = MenuItemLabel::create(item_label_1, CC_CALLBACK_1(CMenuScene::onTouchPlayGameButton, this));
+	MenuItemLabel* item_2 = MenuItemLabel::create(item_label_2, CC_CALLBACK_1(CMenuScene::onTouchExitButton, this));
+
+	Menu* menu = Menu::create(item_1, item_2, NULL);
+	menu->alignItemsVertically();
+	menu->setPosition(winsize.width / 10 * 8, winsize.height / 10 * 2);
+	this->addChild(menu, 2);
+}
+
+// 이벤트별 행동을 정의해준다.
+void CMenuScene::onTouchPlayGameButton(Ref* sender) {
+	CallFunc* call = CallFunc::create(CC_CALLBACK_0(CMenuScene::replaceScene, this));
+	FadeOut* fadeout = FadeOut::create(0.5f);
+	Sequence* seq = Sequence::create(fadeout, call, NULL);
+	this->runAction(seq);
+}
+
+void CMenuScene::onTouchExitButton(cocos2d::Ref* sender) {
+	CCDirector::getInstance()->end();
 }
 
 void CMenuScene::replaceScene() {

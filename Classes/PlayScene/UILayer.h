@@ -39,7 +39,7 @@ private:
 	void onTouchOptionMenuButton(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
 	void onTouchRestartGameButton(cocos2d::Ref* sender);
 	void onTouchSoundMenuButton(cocos2d::Ref* sender);
-	void onTouchQuitButton(cocos2d::Ref* sender);
+	void onTouchExitButton(cocos2d::Ref* sender);
 	void onTouchBGM_ON_OFF_Toggle(Ref* sender);
 	void onToucheffect_ON_OFF_Toggle(Ref* sender);
 	void onTouchSoundMenuBackButton(Ref* sender);

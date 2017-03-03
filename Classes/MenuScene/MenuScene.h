@@ -14,7 +14,11 @@ public:
 	static cocos2d::Scene* createScene();
 
 private:
-	void onTouch(cocos2d::Ref* sender, cocos2d::ui::Widget::TouchEventType type);
+	void createMenu();
+	void createTitle();
+	void createBackGround();
+	void onTouchPlayGameButton(cocos2d::Ref* sender);
+	void onTouchExitButton(cocos2d::Ref* sender);
 	void replaceScene();
 };
 
