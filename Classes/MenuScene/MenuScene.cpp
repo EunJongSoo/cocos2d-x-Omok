@@ -1,8 +1,10 @@
 #include "MenuScene.h"
 #include "PlayScene\PlayScene.h"
+#include "SimpleAudioEngine.h"
 #include "GossiniDanceSprite.h"
 
 using namespace cocos2d;
+using namespace CocosDenshion;
 using namespace ui;
 
 Scene* CMenuScene::createScene() {
@@ -15,11 +17,9 @@ Scene* CMenuScene::createScene() {
 bool CMenuScene::init() {
 	if (!Layer::init())
 		return false;
-	
 	createBackGround();
 	createMenu();
 	createTitle();
-
 	return true;
 }
 
@@ -46,22 +46,31 @@ void CMenuScene::createTitle() {
 	single->setScale(0.1f);
 	single->setPosition(Vec2(-100, winsize.height / 5 * 2));
 	this->addChild(single, 2);
-	MoveTo* moveto = MoveTo::create(0.8f, Vec2(x * 2, y * 3));
-	ScaleTo* scaleto1 = ScaleTo::create(0.8f, 1.0f);
-	RotateTo* rotateto = RotateTo::create(0.8f, 360 * 3);
+	MoveTo* moveto = MoveTo::create(0.6f, Vec2(x * 2, y * 3));
+	ScaleTo* scaleto1 = ScaleTo::create(0.6f, 1.0f);
+	RotateTo* rotateto = RotateTo::create(0.6f, 360 * 3);
 	Spawn* spawn1 = Spawn::create(moveto, scaleto1, rotateto, NULL);
 	ScaleTo* scaleto2 = ScaleTo::create(0.1, 1.5f);
-	Sequence* sequence = Sequence::create(spawn1, scaleto2, NULL);
-	single->runAction(sequence);
-
+	CallFunc* callfunc = CallFunc::create(CC_CALLBACK_0(CMenuScene::effectSound, this));
+	Sequence* sequence1 = Sequence::create(spawn1, callfunc, scaleto2, NULL);
+	single->runAction(sequence1);
+	
 	Label* omok = Label::create("Omok", "font/Marker Felt.ttf", 50);
 	omok->setPosition(Vec2(x * 3, y * 3));
 	omok->setScale(0.1f);
 	omok->setOpacity(0);
 	this->addChild(omok, 2);
-	FadeIn* fadein = FadeIn::create(1.0);
-	Spawn* spawn2 = Spawn::create(scaleto2, fadein, NULL);
+	FadeIn* fadein = FadeIn::create(1.0f);
+	ScaleTo* scaleto3 = ScaleTo::create(1.0f, 1.5f);
+	DelayTime* delay = DelayTime::create(0.9f);
+	Sequence* sequence2 = Sequence::create(delay, callfunc, NULL);
+	Spawn* spawn2 = Spawn::create(fadein, scaleto3, sequence2, NULL);
+	
 	omok->runAction(spawn2);
+}
+
+void CMenuScene::effectSound() {
+	SimpleAudioEngine::getInstance()->playEffect("sound/Effect/effect_1.wav");
 }
 
 void CMenuScene::createMenu() {

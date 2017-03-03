@@ -17,6 +17,7 @@ private:
 	void createMenu();
 	void createTitle();
 	void createBackGround();
+	void effectSound();
 	void onTouchPlayGameButton(cocos2d::Ref* sender);
 	void onTouchExitButton(cocos2d::Ref* sender);
 	void replaceScene();
